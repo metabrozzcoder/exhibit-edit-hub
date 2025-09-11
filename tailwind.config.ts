@@ -57,6 +57,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "museum-gold": {
+          DEFAULT: "hsl(var(--museum-gold))",
+          foreground: "hsl(var(--museum-gold-foreground))",
+        },
+        "museum-bronze": {
+          DEFAULT: "hsl(var(--museum-bronze))",
+          foreground: "hsl(var(--museum-bronze-foreground))",
+        },
+        "heritage-blue": {
+          DEFAULT: "hsl(var(--heritage-blue))",
+          foreground: "hsl(var(--heritage-blue-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
