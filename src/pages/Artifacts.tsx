@@ -7,13 +7,22 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import ArtifactCard from '@/components/artifacts/ArtifactCard';
 import AddArtifactForm from '@/components/artifacts/AddArtifactForm';
-import { mockArtifacts } from '@/data/mockArtifacts';
+import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { Artifact } from '@/types/artifact';
 
 const Artifacts = () => {
   const { permissions } = useAuth();
-  const [artifacts, setArtifacts] = useState(mockArtifacts);
+  const { 
+    artifacts, 
+    filterArtifacts, 
+    getCategories, 
+    getConditions, 
+    addArtifact, 
+    updateArtifact, 
+    deleteArtifact 
+  } = useArtifacts();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState('all');
@@ -21,19 +30,14 @@ const Artifacts = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null);
   
-  const filteredArtifacts = artifacts.filter(artifact => {
-    const matchesSearch = artifact.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         artifact.accessionNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         artifact.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' || artifact.category === selectedCategory;
-    const matchesCondition = selectedCondition === 'all' || artifact.condition === selectedCondition;
-    
-    return matchesSearch && matchesCategory && matchesCondition;
+  const filteredArtifacts = filterArtifacts({
+    searchTerm,
+    category: selectedCategory,
+    condition: selectedCondition,
   });
 
-  const categories = Array.from(new Set(artifacts.map(a => a.category)));
-  const conditions = Array.from(new Set(artifacts.map(a => a.condition)));
+  const categories = getCategories();
+  const conditions = getConditions();
 
   const handleAdd = () => {
     setShowAddForm(true);
@@ -47,7 +51,7 @@ const Artifacts = () => {
 
   const handleDelete = (artifactId: string) => {
     if (confirm('Are you sure you want to delete this artifact? This action cannot be undone.')) {
-      setArtifacts(prev => prev.filter(a => a.id !== artifactId));
+      deleteArtifact(artifactId);
       toast({
         title: "Artifact deleted",
         description: "The artifact has been successfully removed from the collection.",
@@ -67,18 +71,14 @@ const Artifacts = () => {
   const handleSave = (artifactData: Partial<Artifact>) => {
     if (editingArtifact) {
       // Update existing artifact
-      setArtifacts(prev => prev.map(a => 
-        a.id === editingArtifact.id 
-          ? { ...a, ...artifactData } as Artifact
-          : a
-      ));
+      updateArtifact(editingArtifact.id, artifactData);
       toast({
         title: "Artifact updated",
         description: "The artifact has been successfully updated.",
       });
     } else {
       // Add new artifact
-      setArtifacts(prev => [...prev, artifactData as Artifact]);
+      addArtifact(artifactData);
       toast({
         title: "Artifact created",
         description: "New artifact has been added to the collection.",
