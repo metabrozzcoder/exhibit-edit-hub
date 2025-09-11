@@ -1,49 +1,35 @@
 import { useState } from 'react';
-import { Plus, Edit, Trash2, Shield, Mail, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, Shield, Mail, Calendar, UserCheck, UserX } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { User, UserRole } from '@/types/artifact';
 
 const UsersPage = () => {
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: '1',
-      email: 'admin@museum.org',
-      name: 'Dr. Sarah Johnson',
-      role: 'admin',
-      department: 'Administration',
-      createdAt: '2024-01-01',
-      lastLogin: '2024-12-10',
-      isActive: true,
-    },
-    {
-      id: '2',
-      email: 'curator@museum.org',
-      name: 'Mark Stevens',
-      role: 'curator',
-      department: 'Ancient Art',
-      createdAt: '2024-01-15',
-      lastLogin: '2024-12-09',
-      isActive: true,
-    },
-    {
-      id: '3',
-      email: 'researcher@museum.org',
-      name: 'Dr. Emily Chen',
-      role: 'researcher',
-      department: 'Research',
-      createdAt: '2024-02-01',
-      lastLogin: '2024-12-08',
-      isActive: true,
-    },
-  ]);
-
+  const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions } = useAuth();
+  const { toast } = useToast();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  
+  const [newUserForm, setNewUserForm] = useState({
+    name: '',
+    email: '',
+    department: '',
+    role: 'viewer' as UserRole,
+  });
+
+  const users = getAllUsers();
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,41 +51,110 @@ const UsersPage = () => {
     }
   };
 
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  };
+
   const handleAddUser = () => {
-    toast({
-      title: "Add user functionality",
-      description: "User creation form would open here. Connect to Firebase Auth for full functionality.",
-    });
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newUserForm.name || !newUserForm.email) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const tempPassword = generatePassword();
+      await createUser({ ...newUserForm, tempPassword });
+      
+      setNewUserForm({
+        name: '',
+        email: '',
+        department: '',
+        role: 'viewer',
+      });
+      setIsCreateDialogOpen(false);
+      
+      toast({
+        title: "User created successfully",
+        description: `Temporary password: ${tempPassword}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create user",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleEditUser = (userId: string) => {
-    toast({
-      title: "Edit user functionality",
-      description: "User editing form would open here.",
-    });
-  };
-
-  const handleToggleActive = (userId: string) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId 
-        ? { ...user, isActive: !user.isActive }
-        : user
-    ));
-    
     const user = users.find(u => u.id === userId);
-    toast({
-      title: user?.isActive ? "User deactivated" : "User activated",
-      description: `${user?.name} has been ${user?.isActive ? 'deactivated' : 'activated'}.`,
-    });
+    if (user) {
+      setSelectedUser(user);
+      setIsEditDialogOpen(true);
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+  const handleUpdateRole = async (userId: string, newRole: UserRole) => {
+    try {
+      await updateUserRole(userId, newRole);
+      toast({
+        title: "Success",
+        description: "User role updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update user role",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleToggleActive = async (userId: string) => {
+    try {
       const user = users.find(u => u.id === userId);
-      setUsers(prev => prev.filter(u => u.id !== userId));
+      await toggleUserActive(userId);
+      toast({
+        title: "Success",
+        description: `${user?.name} has been ${user?.isActive ? 'deactivated' : 'activated'}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update user status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      const user = users.find(u => u.id === userId);
+      await deleteUser(userId);
       toast({
         title: "User deleted",
         description: `${user?.name} has been removed from the system.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive",
       });
     }
   };
@@ -202,6 +257,18 @@ const UsersPage = () => {
                 </div>
                 
                 <div className="flex gap-2">
+                  <Select value={user.role} onValueChange={(value: UserRole) => handleUpdateRole(user.id, value)}>
+                    <SelectTrigger className="w-28">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="viewer">Viewer</SelectItem>
+                      <SelectItem value="researcher">Researcher</SelectItem>
+                      <SelectItem value="curator">Curator</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
                   <Button
                     variant="outline"
                     size="sm"
@@ -216,18 +283,35 @@ const UsersPage = () => {
                     onClick={() => handleToggleActive(user.id)}
                     className={user.isActive ? "text-orange-600" : "text-green-600"}
                   >
-                    {user.isActive ? "Deactivate" : "Activate"}
+                    {user.isActive ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
                   </Button>
                   
                   {user.role !== 'admin' && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete User</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete {user.name}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   )}
                 </div>
               </div>
@@ -248,6 +332,113 @@ const UsersPage = () => {
           </p>
         </div>
       )}
+
+      {/* Create User Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New User</DialogTitle>
+            <DialogDescription>
+              Add a new user to the system. A temporary password will be generated.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateUser} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="user-name">Full Name *</Label>
+                <Input
+                  id="user-name"
+                  value={newUserForm.name}
+                  onChange={(e) => setNewUserForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="John Smith"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-email">Email *</Label>
+                <Input
+                  id="user-email"
+                  type="email"
+                  value={newUserForm.email}
+                  onChange={(e) => setNewUserForm(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="john@museum.org"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-department">Department</Label>
+                <Input
+                  id="user-department"
+                  value={newUserForm.department}
+                  onChange={(e) => setNewUserForm(prev => ({ ...prev, department: e.target.value }))}
+                  placeholder="Ancient Art"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-role">Role</Label>
+                <Select value={newUserForm.role} onValueChange={(value: UserRole) => setNewUserForm(prev => ({ ...prev, role: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="viewer">Viewer</SelectItem>
+                    <SelectItem value="researcher">Researcher</SelectItem>
+                    <SelectItem value="curator">Curator</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">
+                Create User
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+            <DialogDescription>
+              Update user information
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-4">
+              <div>
+                <Label>Name</Label>
+                <p className="text-sm font-medium">{selectedUser.name}</p>
+              </div>
+              <div>
+                <Label>Email</Label>
+                <p className="text-sm font-medium">{selectedUser.email}</p>
+              </div>
+              <div>
+                <Label>Department</Label>
+                <p className="text-sm font-medium">{selectedUser.department}</p>
+              </div>
+              <div>
+                <Label>Current Role</Label>
+                <Badge className={getRoleBadgeColor(selectedUser.role)}>
+                  {selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}
+                </Badge>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsEditDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

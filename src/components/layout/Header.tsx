@@ -1,11 +1,12 @@
-import { Search, Bell, User } from 'lucide-react';
+import { Search, Bell, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 
 const Header = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
@@ -32,9 +33,21 @@ const Header = () => {
             <p className="text-sm font-medium">{user?.name}</p>
             <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
           </div>
-          <Button variant="ghost" size="sm" className="rounded-full h-8 w-8 p-0">
-            <User className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="rounded-full h-8 w-8 p-0">
+                <User className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

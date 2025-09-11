@@ -82,6 +82,15 @@ const AdminProfile = () => {
     }
   };
 
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  };
+
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -95,7 +104,8 @@ const AdminProfile = () => {
     }
 
     try {
-      await createUser(newUserForm);
+      const tempPassword = generatePassword();
+      await createUser({ ...newUserForm, tempPassword });
       setNewUserForm({
         name: '',
         email: '',
@@ -104,8 +114,8 @@ const AdminProfile = () => {
         tempPassword: ''
       });
       toast({
-        title: "Success",
-        description: "User created successfully",
+        title: "User created successfully",
+        description: `Temporary password: ${tempPassword}`,
       });
     } catch (error) {
       toast({
