@@ -14,8 +14,9 @@ export interface Artifact {
     weight?: number;
   };
   condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | 'Damaged';
-  location: string;
+  location: 'warehouse' | 'vitrine';
   imageUrl?: string;
+  vitrineImageUrl?: string;
   provenance: string;
   acquisitionDate: string;
   acquisitionMethod: 'Purchase' | 'Donation' | 'Loan' | 'Bequest' | 'Transfer';

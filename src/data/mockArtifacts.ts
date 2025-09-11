@@ -17,7 +17,7 @@ export const mockArtifacts: Artifact[] = [
       weight: 3.2
     },
     condition: 'Good',
-    location: 'Gallery A, Case 3',
+    location: 'vitrine',
     imageUrl: '',
     provenance: 'Private collection, acquired 1987; Sotheby\'s London, 2023',
     acquisitionDate: '2023-03-15',
@@ -48,7 +48,7 @@ export const mockArtifacts: Artifact[] = [
       weight: 2.8
     },
     condition: 'Excellent',
-    location: 'Gallery B, Case 1',
+    location: 'vitrine',
     imageUrl: '',
     provenance: 'Excavated at Saqqara, 1982; Egyptian Museum loan, 2024',
     acquisitionDate: '2024-02-20',
@@ -79,7 +79,7 @@ export const mockArtifacts: Artifact[] = [
       weight: 0.08
     },
     condition: 'Fair',
-    location: 'Storage Room C, Shelf 15',
+    location: 'warehouse',
     imageUrl: '',
     provenance: 'Private donation, estate of Dr. Margaret Thompson, 2023',
     acquisitionDate: '2023-09-10',

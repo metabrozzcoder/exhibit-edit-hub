@@ -74,7 +74,7 @@ const ArtifactCard = ({ artifact, onEdit, onDelete, onView }: ArtifactCardProps)
             </div>
             <div className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              {artifact.location}
+              {artifact.location.charAt(0).toUpperCase() + artifact.location.slice(1)}
             </div>
           </div>
           

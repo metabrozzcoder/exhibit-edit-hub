@@ -26,7 +26,7 @@ const artifactSchema = z.object({
   depth: z.coerce.number().positive('Depth must be positive'),
   weight: z.coerce.number().positive().optional(),
   condition: z.enum(['Excellent', 'Good', 'Fair', 'Poor', 'Damaged']),
-  location: z.string().min(1, 'Location is required'),
+  location: z.enum(['warehouse', 'vitrine']),
   provenance: z.string().min(1, 'Provenance is required'),
   acquisitionDate: z.string().min(1, 'Acquisition date is required'),
   acquisitionMethod: z.enum(['Purchase', 'Donation', 'Loan', 'Bequest', 'Transfer']),
@@ -34,6 +34,7 @@ const artifactSchema = z.object({
   conservationNotes: z.string(),
   isOnDisplay: z.boolean(),
   tags: z.string(),
+  vitrineImageUrl: z.string().optional(),
 });
 
 type ArtifactFormData = z.infer<typeof artifactSchema>;
@@ -48,6 +49,8 @@ interface AddArtifactFormProps {
 const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactFormProps) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(initialData?.imageUrl || '');
+  const [vitrineImageFile, setVitrineImageFile] = useState<File | null>(null);
+  const [vitrineImagePreview, setVitrineImagePreview] = useState<string>(initialData?.vitrineImageUrl || '');
 
   const form = useForm<ArtifactFormData>({
     resolver: zodResolver(artifactSchema),
@@ -64,7 +67,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       depth: initialData?.dimensions?.depth || 0,
       weight: initialData?.dimensions?.weight || undefined,
       condition: initialData?.condition || 'Good',
-      location: initialData?.location || '',
+      location: initialData?.location || 'warehouse',
       provenance: initialData?.provenance || '',
       acquisitionDate: initialData?.acquisitionDate?.split('T')[0] || '',
       acquisitionMethod: initialData?.acquisitionMethod || 'Purchase',
@@ -72,8 +75,19 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       conservationNotes: initialData?.conservationNotes || '',
       isOnDisplay: initialData?.isOnDisplay || false,
       tags: initialData?.tags?.join(', ') || '',
+      vitrineImageUrl: initialData?.vitrineImageUrl || '',
     },
   });
+
+  const handleVitrineImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setVitrineImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setVitrineImagePreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -111,6 +125,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       isOnDisplay: data.isOnDisplay,
       tags: data.tags.split(',').map(tag => tag.trim()).filter(Boolean),
       imageUrl: imagePreview,
+      vitrineImageUrl: vitrineImagePreview || undefined,
       updatedAt: new Date().toISOString(),
     };
 
@@ -130,6 +145,9 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
   const categories = ['Ceramics', 'Stone Objects', 'Glass', 'Metalwork', 'Textiles', 'Paintings', 'Sculptures'];
   const conditions = ['Excellent', 'Good', 'Fair', 'Poor', 'Damaged'];
   const acquisitionMethods = ['Purchase', 'Donation', 'Loan', 'Bequest', 'Transfer'];
+  const locations = ['warehouse', 'vitrine'];
+
+  const selectedLocation = form.watch('location');
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -302,9 +320,20 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Current Location</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Gallery A, Case 3" {...field} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select location" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {locations.map((location) => (
+                              <SelectItem key={location} value={location}>
+                                {location.charAt(0).toUpperCase() + location.slice(1)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -520,9 +549,59 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                           </p>
                         </div>
                       )}
+                </div>
+
+                {/* Vitrine Image Upload - Only show if location is vitrine */}
+                {selectedLocation === 'vitrine' && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Vitrine Photo</h3>
+                    
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                      {vitrineImagePreview ? (
+                        <div className="space-y-4">
+                          <img 
+                            src={vitrineImagePreview} 
+                            alt="Vitrine Preview" 
+                            className="max-h-48 mx-auto rounded-lg object-cover"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              setVitrineImagePreview('');
+                              setVitrineImageFile(null);
+                            }}
+                          >
+                            Remove Vitrine Photo
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <Upload className="h-12 w-12 text-muted-foreground mx-auto" />
+                          <div>
+                            <Button type="button" variant="outline" asChild>
+                              <label htmlFor="vitrine-image-upload" className="cursor-pointer">
+                                Upload Vitrine Photo
+                              </label>
+                            </Button>
+                            <Input
+                              id="vitrine-image-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleVitrineImageChange}
+                              className="hidden"
+                            />
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            Photo of the display case/vitrine
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
+                )}
+              </div>
+            </div>
               </div>
 
               {/* Additional Information */}
