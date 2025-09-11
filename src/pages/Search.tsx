@@ -25,10 +25,38 @@ const SearchPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   
   const quickSearches = [
-    { label: 'Ancient Greek', icon: Building, action: () => setSearchTerm('Ancient Greek') },
-    { label: 'vitrine', icon: MapPin, action: () => setSelectedLocation('vitrine') },
-    { label: 'warehouse', icon: Package, action: () => setSelectedLocation('warehouse') },
-    { label: 'Classical', icon: Tag, action: () => setSelectedTags(['Classical']) },
+    { 
+      label: 'Ancient Greek', 
+      icon: Building, 
+      action: () => {
+        setSearchTerm('Ancient Greek');
+        setShowFilters(true);
+      }
+    },
+    { 
+      label: 'In Vitrine', 
+      icon: MapPin, 
+      action: () => {
+        setSelectedLocation('vitrine');
+        setShowFilters(true);
+      }
+    },
+    { 
+      label: 'In Warehouse', 
+      icon: Package, 
+      action: () => {
+        setSelectedLocation('warehouse');
+        setShowFilters(true);
+      }
+    },
+    { 
+      label: 'Classical Art', 
+      icon: Tag, 
+      action: () => {
+        setSelectedTags(prev => prev.includes('Classical') ? prev : [...prev, 'Classical']);
+        setShowFilters(true);
+      }
+    },
   ];
 
   const searchResults = filterArtifacts({
