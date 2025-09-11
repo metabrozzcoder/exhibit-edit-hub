@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -13,6 +14,7 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,8 @@ const LoginPage = () => {
         title: "Success",
         description: "Welcome back!",
       });
-      // No manual redirect needed - Layout component will handle the route change
+      // Redirect to dashboard after successful login
+      navigate('/', { replace: true });
     } catch (error) {
       toast({
         title: "Error",
