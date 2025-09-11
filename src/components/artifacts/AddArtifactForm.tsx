@@ -32,7 +32,6 @@ const artifactSchema = z.object({
   acquisitionMethod: z.enum(['Purchase', 'Donation', 'Loan', 'Bequest', 'Transfer']),
   estimatedValue: z.coerce.number().positive().optional(),
   conservationNotes: z.string(),
-  isOnDisplay: z.boolean(),
   tags: z.string(),
   vitrineImageUrl: z.string().optional(),
 });
@@ -73,7 +72,6 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       acquisitionMethod: initialData?.acquisitionMethod || 'Purchase',
       estimatedValue: initialData?.estimatedValue || undefined,
       conservationNotes: initialData?.conservationNotes || '',
-      isOnDisplay: initialData?.isOnDisplay || false,
       tags: initialData?.tags?.join(', ') || '',
       vitrineImageUrl: initialData?.vitrineImageUrl || '',
     },
@@ -122,7 +120,6 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       acquisitionMethod: data.acquisitionMethod,
       estimatedValue: data.estimatedValue,
       conservationNotes: data.conservationNotes,
-      isOnDisplay: data.isOnDisplay,
       tags: data.tags.split(',').map(tag => tag.trim()).filter(Boolean),
       imageUrl: imagePreview,
       vitrineImageUrl: vitrineImagePreview || undefined,
@@ -341,21 +338,22 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                   
                   <FormField
                     control={form.control}
-                    name="isOnDisplay"
+                    name="location"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>On Display</FormLabel>
-                          <div className="text-sm text-muted-foreground">
-                            Is this artifact currently on display?
-                          </div>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
+                      <FormItem>
+                        <FormLabel>Location</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select location" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="vitrine">In Vitrine</SelectItem>
+                            <SelectItem value="warehouse">In Warehouse</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />

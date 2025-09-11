@@ -14,7 +14,7 @@ export interface Artifact {
     weight?: number;
   };
   condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | 'Damaged';
-  location: 'warehouse' | 'vitrine';
+  location: 'vitrine' | 'warehouse';
   imageUrl?: string;
   vitrineImageUrl?: string;
   provenance: string;
@@ -24,7 +24,6 @@ export interface Artifact {
   exhibitionHistory: string[];
   conservationNotes: string;
   tags: string[];
-  isOnDisplay: boolean;
   createdAt: string;
   updatedAt: string;
   createdBy: string;

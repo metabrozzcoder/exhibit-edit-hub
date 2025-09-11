@@ -5,7 +5,7 @@ import { mockArtifacts } from '@/data/mockArtifacts';
 
 const Dashboard = () => {
   const totalArtifacts = mockArtifacts.length;
-  const onDisplayCount = mockArtifacts.filter(a => a.isOnDisplay).length;
+  const inVitrineCount = mockArtifacts.filter(a => a.location === 'vitrine').length;
   const needsAttentionCount = mockArtifacts.filter(a => 
     a.condition === 'Poor' || a.condition === 'Damaged'
   ).length;
@@ -25,8 +25,8 @@ const Dashboard = () => {
       color: 'text-museum-bronze'
     },
     {
-      title: 'On Display',
-      value: onDisplayCount,
+      title: 'In Vitrine',
+      value: inVitrineCount,
       icon: Eye,
       description: 'Currently exhibited',
       color: 'text-heritage-blue'

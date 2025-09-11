@@ -9,7 +9,7 @@ const SearchPage = () => {
   
   const quickSearches = [
     { label: 'Ancient Greek artifacts', icon: Building },
-    { label: 'Items on display', icon: MapPin },
+    { label: 'Items in vitrine', icon: MapPin },
     { label: 'Damaged condition', icon: FileText },
     { label: 'Recent acquisitions', icon: UserPlus },
   ];

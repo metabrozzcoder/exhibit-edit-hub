@@ -46,10 +46,10 @@ const ArtifactCard = ({ artifact, onEdit, onDelete, onView }: ArtifactCardProps)
               {artifact.condition}
             </Badge>
           </div>
-          {artifact.isOnDisplay && (
+          {artifact.location === 'vitrine' && (
             <div className="absolute top-2 left-2">
               <Badge className="bg-museum-gold text-museum-gold-foreground">
-                On Display
+                In Vitrine
               </Badge>
             </div>
           )}
