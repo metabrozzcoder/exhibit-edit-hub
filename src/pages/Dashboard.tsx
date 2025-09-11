@@ -1,20 +1,49 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Package, Eye, Users, TrendingUp, AlertTriangle, Calendar } from 'lucide-react';
-import { mockArtifacts } from '@/data/mockArtifacts';
+import { Button } from '@/components/ui/button';
+import { Package, Eye, Users, TrendingUp, AlertTriangle, Calendar, MapPin, Warehouse, UserCheck, ArrowRight } from 'lucide-react';
+import { useArtifacts } from '@/hooks/useArtifacts';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const totalArtifacts = mockArtifacts.length;
-  const inVitrineCount = mockArtifacts.filter(a => a.location === 'vitrine').length;
-  const needsAttentionCount = mockArtifacts.filter(a => 
-    a.condition === 'Poor' || a.condition === 'Damaged'
+  const { artifacts } = useArtifacts();
+  const { getAllUsers, user } = useAuth();
+  const navigate = useNavigate();
+  
+  const totalArtifacts = artifacts.length;
+  const inVitrineCount = artifacts.filter(a => a.location === 'vitrine').length;
+  const inWarehouseCount = artifacts.filter(a => a.location === 'warehouse').length;
+  const needsAttentionCount = artifacts.filter(a => 
+    a.condition === 'Poor' || a.condition === 'Damaged' || a.condition === 'Fair'
   ).length;
-  const recentAcquisitions = mockArtifacts.filter(a => {
+  
+  const recentAcquisitions = artifacts.filter(a => {
     const acquisitionDate = new Date(a.acquisitionDate);
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     return acquisitionDate > sixMonthsAgo;
   }).length;
+
+  const allUsers = getAllUsers();
+  const activeUsers = allUsers.filter(u => u.isActive).length;
+  
+  // Get most valuable artifacts
+  const mostValuableArtifacts = artifacts
+    .sort((a, b) => (b.estimatedValue || 0) - (a.estimatedValue || 0))
+    .slice(0, 3);
+
+  // Get recent artifacts (last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const recentArtifacts = artifacts
+    .filter(a => new Date(a.createdAt) > thirtyDaysAgo)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
+
+  // Collection value
+  const totalValue = artifacts.reduce((sum, artifact) => sum + (artifact.estimatedValue || 0), 0);
 
   const stats = [
     {
@@ -22,52 +51,47 @@ const Dashboard = () => {
       value: totalArtifacts,
       icon: Package,
       description: 'In collection',
-      color: 'text-museum-bronze'
+      color: 'text-museum-bronze',
+      onClick: () => navigate('/artifacts')
     },
     {
       title: 'In Vitrine',
       value: inVitrineCount,
       icon: Eye,
       description: 'Currently exhibited',
-      color: 'text-heritage-blue'
+      color: 'text-heritage-blue',
+      onClick: () => navigate('/search?location=vitrine')
     },
     {
-      title: 'Recent Acquisitions',
-      value: recentAcquisitions,
-      icon: TrendingUp,
-      description: 'Last 6 months',
-      color: 'text-museum-gold'
+      title: 'Active Users',
+      value: activeUsers,
+      icon: Users,
+      description: `of ${allUsers.length} total users`,
+      color: 'text-museum-gold',
+      onClick: () => navigate('/users')
     },
     {
       title: 'Need Attention',
       value: needsAttentionCount,
       icon: AlertTriangle,
-      description: 'Poor/Damaged condition',
-      color: 'text-destructive'
+      description: 'Condition issues',
+      color: 'text-destructive',
+      onClick: () => navigate('/search?condition=fair')
     }
   ];
 
-  const recentActivity = [
+  const locationStats = [
     {
-      action: 'Added new artifact',
-      artifact: 'Roman Glass Unguentarium',
-      user: 'Dr. Sarah Johnson',
-      time: '2 hours ago',
-      type: 'create'
+      title: 'Vitrine Items',
+      value: inVitrineCount,
+      icon: MapPin,
+      percentage: Math.round((inVitrineCount / totalArtifacts) * 100) || 0
     },
     {
-      action: 'Updated condition',
-      artifact: 'Ancient Greek Amphora',
-      user: 'Mark Stevens',
-      time: '5 hours ago',
-      type: 'update'
-    },
-    {
-      action: 'Moved to storage',
-      artifact: 'Egyptian Canopic Jar',
-      user: 'Dr. Sarah Johnson',
-      time: '1 day ago',
-      type: 'update'
+      title: 'Warehouse Items', 
+      value: inWarehouseCount,
+      icon: Warehouse,
+      percentage: Math.round((inWarehouseCount / totalArtifacts) * 100) || 0
     }
   ];
 
@@ -82,7 +106,7 @@ const Dashboard = () => {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Card key={stat.title}>
+            <Card key={stat.title} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={stat.onClick}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   {stat.title}
@@ -100,45 +124,85 @@ const Dashboard = () => {
         })}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Location Distribution */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Location Distribution
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            {locationStats.map((location) => {
+              const Icon = location.icon;
+              return (
+                <div key={location.title} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">{location.title}</p>
+                      <p className="text-sm text-muted-foreground">{location.percentage}% of collection</p>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold">{location.value}</div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Recent Artifacts */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Recent Activity
+              Recent Additions
             </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/artifacts')}>
+              View All <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${
-                    activity.type === 'create' ? 'bg-green-500' : 'bg-blue-500'
-                  }`} />
+              {recentArtifacts.length > 0 ? recentArtifacts.map((artifact) => (
+                <div key={artifact.id} className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full mt-2 bg-green-500" />
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">{activity.action}</p>
+                    <p className="text-sm font-medium">{artifact.title}</p>
                     <p className="text-sm text-muted-foreground">
-                      {activity.artifact} by {activity.user}
+                      {artifact.accessionNumber}
                     </p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(artifact.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <p className="text-sm text-muted-foreground">No recent additions</p>
+              )}
             </div>
           </CardContent>
         </Card>
 
+        {/* Items Needing Attention */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Items Needing Attention
+              Needs Attention
             </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/search')}>
+              View All <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {mockArtifacts
-                .filter(a => a.condition === 'Poor' || a.condition === 'Damaged')
+              {artifacts
+                .filter(a => a.condition === 'Poor' || a.condition === 'Damaged' || a.condition === 'Fair')
+                .slice(0, 4)
                 .map((artifact) => (
                   <div key={artifact.id} className="flex items-center justify-between">
                     <div>
@@ -160,7 +224,93 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Most Valuable Items */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-museum-gold" />
+              Most Valuable
+            </CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/artifacts')}>
+              View All <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {mostValuableArtifacts.map((artifact, index) => (
+                <div key={artifact.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-museum-gold/20 flex items-center justify-center text-xs font-bold">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{artifact.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {artifact.accessionNumber}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-bold text-museum-gold">
+                    ${artifact.estimatedValue?.toLocaleString() || 'N/A'}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-3 border-t">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Total Collection Value:</span>
+                <span className="text-lg font-bold text-museum-gold">
+                  ${totalValue.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-4">
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => navigate('/artifacts')}
+            >
+              <Package className="h-6 w-6" />
+              <span>View Artifacts</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => navigate('/search')}
+            >
+              <Eye className="h-6 w-6" />
+              <span>Search Collection</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => navigate('/users')}
+            >
+              <Users className="h-6 w-6" />
+              <span>Manage Users</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col items-center gap-2"
+              onClick={() => navigate('/reports')}
+            >
+              <TrendingUp className="h-6 w-6" />
+              <span>View Reports</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
