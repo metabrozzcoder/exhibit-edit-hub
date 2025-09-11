@@ -108,37 +108,40 @@ export const useAuth = () => {
   const permissions = user ? rolePermissions[user.role] : null;
 
   const login = async (email: string, password: string) => {
-    // Replace with Firebase auth
-    setIsLoading(true);
-    
-    // Simple admin credentials for testing
-    if ((email === 'admin' && password === 'admin') || 
-        (email === 'admin@museum.org' && password === 'admin')) {
-      setTimeout(() => {
-        const adminUser = users.find(u => u.email === email) || users[0];
-        const updatedUser = { ...adminUser, lastLogin: new Date().toISOString().split('T')[0] };
-        setUser(updatedUser);
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        setIsLoading(false);
-      }, 1000);
-      return;
-    }
+    return new Promise<void>((resolve, reject) => {
+      setIsLoading(true);
+      
+      // Simple admin credentials for testing
+      if ((email === 'admin' && password === 'admin') || 
+          (email === 'admin@museum.org' && password === 'admin')) {
+        setTimeout(() => {
+          const adminUser = users.find(u => u.email === email) || users[0];
+          const updatedUser = { ...adminUser, lastLogin: new Date().toISOString().split('T')[0] };
+          setUser(updatedUser);
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          setIsLoading(false);
+          resolve();
+        }, 1000);
+        return;
+      }
 
-    // Simulate authentication for other users
-    const foundUser = users.find(u => u.email === email);
-    if (foundUser && foundUser.isActive) {
-      setTimeout(() => {
-        const updatedUser = { ...foundUser, lastLogin: new Date().toISOString().split('T')[0] };
-        setUser(updatedUser);
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        setIsLoading(false);
-      }, 1000);
-    } else {
-      setTimeout(() => {
-        setIsLoading(false);
-        throw new Error('Invalid credentials');
-      }, 1000);
-    }
+      // Simulate authentication for other users
+      const foundUser = users.find(u => u.email === email);
+      if (foundUser && foundUser.isActive) {
+        setTimeout(() => {
+          const updatedUser = { ...foundUser, lastLogin: new Date().toISOString().split('T')[0] };
+          setUser(updatedUser);
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          setIsLoading(false);
+          resolve();
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          setIsLoading(false);
+          reject(new Error('Invalid credentials'));
+        }, 1000);
+      }
+    });
   };
 
   const register = async (formData: {

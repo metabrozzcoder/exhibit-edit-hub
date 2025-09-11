@@ -32,6 +32,7 @@ const LoginPage = () => {
         title: "Success",
         description: "Welcome back!",
       });
+      // No manual redirect needed - Layout component will handle the route change
     } catch (error) {
       toast({
         title: "Error",
