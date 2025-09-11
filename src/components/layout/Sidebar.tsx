@@ -42,12 +42,6 @@ const Sidebar = ({ className }: SidebarProps) => {
       show: true,
     },
     {
-      name: 'Add Artifact',
-      href: '/artifacts/new',
-      icon: Plus,
-      show: permissions?.canCreate,
-    },
-    {
       name: 'Search',
       href: '/search',
       icon: Search,
@@ -57,7 +51,7 @@ const Sidebar = ({ className }: SidebarProps) => {
       name: 'History',
       href: '/history',
       icon: History,
-      show: true,
+      show: user?.role === 'admin',
     },
     {
       name: 'Reports',

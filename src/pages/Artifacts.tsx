@@ -4,19 +4,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
 import ArtifactCard from '@/components/artifacts/ArtifactCard';
+import AddArtifactForm from '@/components/artifacts/AddArtifactForm';
 import { mockArtifacts } from '@/data/mockArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { Artifact } from '@/types/artifact';
 
 const Artifacts = () => {
   const { permissions } = useAuth();
+  const [artifacts, setArtifacts] = useState(mockArtifacts);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null);
   
-  const filteredArtifacts = mockArtifacts.filter(artifact => {
+  const filteredArtifacts = artifacts.filter(artifact => {
     const matchesSearch = artifact.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          artifact.accessionNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          artifact.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -27,22 +32,91 @@ const Artifacts = () => {
     return matchesSearch && matchesCategory && matchesCondition;
   });
 
-  const categories = Array.from(new Set(mockArtifacts.map(a => a.category)));
-  const conditions = Array.from(new Set(mockArtifacts.map(a => a.condition)));
+  const categories = Array.from(new Set(artifacts.map(a => a.category)));
+  const conditions = Array.from(new Set(artifacts.map(a => a.condition)));
+
+  const handleAdd = () => {
+    setShowAddForm(true);
+    setEditingArtifact(null);
+  };
 
   const handleEdit = (artifact: Artifact) => {
-    console.log('Edit artifact:', artifact.id);
-    // Navigate to edit form
+    setEditingArtifact(artifact);
+    setShowAddForm(true);
   };
 
   const handleDelete = (artifactId: string) => {
-    console.log('Delete artifact:', artifactId);
-    // Implement delete functionality with Firebase
+    if (confirm('Are you sure you want to delete this artifact? This action cannot be undone.')) {
+      setArtifacts(prev => prev.filter(a => a.id !== artifactId));
+      toast({
+        title: "Artifact deleted",
+        description: "The artifact has been successfully removed from the collection.",
+      });
+    }
   };
 
   const handleView = (artifact: Artifact) => {
-    console.log('View artifact:', artifact.id);
-    // Navigate to detail view
+    // For now, just show details in console. Can be expanded to a detail modal
+    console.log('Viewing artifact:', artifact);
+    toast({
+      title: "Artifact details",
+      description: `Viewing ${artifact.title} (${artifact.accessionNumber})`,
+    });
+  };
+
+  const handleSave = (artifactData: Partial<Artifact>) => {
+    if (editingArtifact) {
+      // Update existing artifact
+      setArtifacts(prev => prev.map(a => 
+        a.id === editingArtifact.id 
+          ? { ...a, ...artifactData } as Artifact
+          : a
+      ));
+      toast({
+        title: "Artifact updated",
+        description: "The artifact has been successfully updated.",
+      });
+    } else {
+      // Add new artifact
+      setArtifacts(prev => [...prev, artifactData as Artifact]);
+      toast({
+        title: "Artifact created",
+        description: "New artifact has been added to the collection.",
+      });
+    }
+    setShowAddForm(false);
+    setEditingArtifact(null);
+  };
+
+  const handleExport = () => {
+    // Convert to CSV format
+    const csvHeaders = ['Accession Number', 'Title', 'Category', 'Period', 'Culture', 'Condition', 'Location'];
+    const csvData = filteredArtifacts.map(artifact => [
+      artifact.accessionNumber,
+      artifact.title,
+      artifact.category,
+      artifact.period,
+      artifact.culture,
+      artifact.condition,
+      artifact.location
+    ]);
+    
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `artifacts-export-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Export completed",
+      description: `Exported ${filteredArtifacts.length} artifacts to CSV.`,
+    });
   };
 
   const activeFiltersCount = 
@@ -56,19 +130,22 @@ const Artifacts = () => {
         <div>
           <h1 className="text-3xl font-bold text-museum-bronze">Artifacts</h1>
           <p className="text-muted-foreground">
-            Manage your museum collection ({filteredArtifacts.length} of {mockArtifacts.length} shown)
+            Manage your museum collection ({filteredArtifacts.length} of {artifacts.length} shown)
           </p>
         </div>
         
         <div className="flex items-center gap-2">
           {permissions?.canExport && (
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
           )}
           {permissions?.canCreate && (
-            <Button className="bg-museum-gold hover:bg-museum-gold/90 text-museum-gold-foreground">
+            <Button 
+              className="bg-museum-gold hover:bg-museum-gold/90 text-museum-gold-foreground"
+              onClick={handleAdd}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Artifact
             </Button>
@@ -176,6 +253,19 @@ const Artifacts = () => {
             />
           ))}
         </div>
+      )}
+      
+      {/* Add/Edit Form Modal */}
+      {showAddForm && (
+        <AddArtifactForm
+          mode={editingArtifact ? 'edit' : 'create'}
+          initialData={editingArtifact || undefined}
+          onSave={handleSave}
+          onClose={() => {
+            setShowAddForm(false);
+            setEditingArtifact(null);
+          }}
+        />
       )}
     </div>
   );
