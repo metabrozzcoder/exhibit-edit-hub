@@ -80,7 +80,10 @@ export const useArtifacts = () => {
       artifact.category.toLowerCase().includes(lowerSearchTerm) ||
       artifact.period.toLowerCase().includes(lowerSearchTerm) ||
       artifact.material.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.tags.some(tag => tag.toLowerCase().includes(lowerSearchTerm))
+      artifact.location.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.tags.some(tag => tag.toLowerCase().includes(lowerSearchTerm)) ||
+      artifact.provenance?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.conservationNotes?.toLowerCase().includes(lowerSearchTerm)
     );
   };
 
@@ -89,6 +92,7 @@ export const useArtifacts = () => {
     category?: string;
     condition?: string;
     location?: string;
+    tags?: string[];
   }) => {
     let filtered = artifacts;
 
@@ -108,6 +112,16 @@ export const useArtifacts = () => {
       filtered = filtered.filter(artifact => artifact.location === filters.location);
     }
 
+    if (filters.tags && filters.tags.length > 0) {
+      filtered = filtered.filter(artifact => 
+        filters.tags!.some(tag => 
+          artifact.tags.some(artifactTag => 
+            artifactTag.toLowerCase().includes(tag.toLowerCase())
+          )
+        )
+      );
+    }
+
     return filtered;
   };
 
@@ -123,6 +137,11 @@ export const useArtifacts = () => {
     return Array.from(new Set(artifacts.map(a => a.location)));
   };
 
+  const getAllTags = () => {
+    const allTags = artifacts.flatMap(artifact => artifact.tags);
+    return Array.from(new Set(allTags)).sort();
+  };
+
   return {
     artifacts,
     isLoading,
@@ -134,5 +153,6 @@ export const useArtifacts = () => {
     getCategories,
     getConditions,
     getLocations,
+    getAllTags,
   };
 };

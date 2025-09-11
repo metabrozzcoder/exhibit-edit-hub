@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Search, MapPin, Building, Users, FileText, Settings, UserPlus, Package } from 'lucide-react';
+import { Search, MapPin, Building, Users, FileText, Settings, UserPlus, Package, Tag, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ArtifactCard from '@/components/artifacts/ArtifactCard';
 import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,18 +15,20 @@ import { toast } from '@/hooks/use-toast';
 import { Artifact } from '@/types/artifact';
 
 const SearchPage = () => {
-  const { searchArtifacts, filterArtifacts, getCategories, getConditions, getLocations, updateArtifact, deleteArtifact } = useArtifacts();
+  const { searchArtifacts, filterArtifacts, getCategories, getConditions, getLocations, getAllTags, updateArtifact, deleteArtifact } = useArtifacts();
   const { permissions } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
   
   const quickSearches = [
-    { label: 'Ancient Greek artifacts', icon: Building },
-    { label: 'Items in vitrine', icon: MapPin },
-    { label: 'Damaged condition', icon: FileText },
-    { label: 'Recent acquisitions', icon: UserPlus },
+    { label: 'Ancient Greek', icon: Building, action: () => setSearchTerm('Ancient Greek') },
+    { label: 'vitrine', icon: MapPin, action: () => setSelectedLocation('vitrine') },
+    { label: 'warehouse', icon: Package, action: () => setSelectedLocation('warehouse') },
+    { label: 'Classical', icon: Tag, action: () => setSelectedTags(['Classical']) },
   ];
 
   const searchResults = filterArtifacts({
@@ -31,11 +36,29 @@ const SearchPage = () => {
     category: selectedCategory,
     condition: selectedCondition,
     location: selectedLocation,
+    tags: selectedTags,
   });
 
   const categories = getCategories();
   const conditions = getConditions();
   const locations = getLocations();
+  const allTags = getAllTags();
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('all');
+    setSelectedCondition('all');
+    setSelectedLocation('all');
+    setSelectedTags([]);
+  };
 
   const handleEdit = (artifact: Artifact) => {
     // For now, just show a toast. This could be expanded to open an edit modal
@@ -62,7 +85,13 @@ const SearchPage = () => {
     });
   };
 
-  const hasFilters = searchTerm || selectedCategory !== 'all' || selectedCondition !== 'all' || selectedLocation !== 'all';
+  const hasFilters = searchTerm || selectedCategory !== 'all' || selectedCondition !== 'all' || selectedLocation !== 'all' || selectedTags.length > 0;
+  const activeFiltersCount = 
+    (searchTerm ? 1 : 0) +
+    (selectedCategory !== 'all' ? 1 : 0) + 
+    (selectedCondition !== 'all' ? 1 : 0) + 
+    (selectedLocation !== 'all' ? 1 : 0) +
+    selectedTags.length;
 
   return (
     <div className="space-y-6">
@@ -93,7 +122,7 @@ const SearchPage = () => {
                   key={search.label}
                   variant="outline"
                   className="h-auto p-4 justify-start"
-                  onClick={() => setSearchTerm(search.label)}
+                  onClick={search.action}
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {search.label}
@@ -102,50 +131,135 @@ const SearchPage = () => {
             })}
           </div>
           
-          <div className="flex flex-col gap-2 min-w-48">
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col gap-2 min-w-64">
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="justify-between"
+            >
+              <span className="flex items-center">
+                <Settings className="h-4 w-4 mr-2" />
+                Filters
+              </span>
+              {activeFiltersCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {activeFiltersCount}
+                </Badge>
+              )}
+            </Button>
             
-            <Select value={selectedCondition} onValueChange={setSelectedCondition}>
-              <SelectTrigger>
-                <SelectValue placeholder="Condition" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Conditions</SelectItem>
-                {conditions.map(condition => (
-                  <SelectItem key={condition} value={condition}>
-                    {condition}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-              <SelectTrigger>
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                {locations.map(location => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Collapsible open={showFilters} onOpenChange={setShowFilters}>
+              <CollapsibleContent className="space-y-2">
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map(category => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select value={selectedCondition} onValueChange={setSelectedCondition}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Condition" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Conditions</SelectItem>
+                    {conditions.map(condition => (
+                      <SelectItem key={condition} value={condition}>
+                        {condition}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Locations</SelectItem>
+                    {locations.map(location => (
+                      <SelectItem key={location} value={location}>
+                        <span className="capitalize">{location}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Tags Section */}
+                <div className="border rounded-lg p-3">
+                  <Label className="text-sm font-medium mb-2 flex items-center">
+                    <Tag className="h-4 w-4 mr-1" />
+                    Tags
+                  </Label>
+                  <div className="max-h-32 overflow-y-auto space-y-2">
+                    {allTags.map(tag => (
+                      <div key={tag} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`tag-${tag}`}
+                          checked={selectedTags.includes(tag)}
+                          onCheckedChange={() => handleTagToggle(tag)}
+                        />
+                        <Label 
+                          htmlFor={`tag-${tag}`} 
+                          className="text-sm cursor-pointer"
+                        >
+                          {tag}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </div>
+
+        {/* Active Filters Display */}
+        {hasFilters && (
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm text-muted-foreground">Active filters:</span>
+            {searchTerm && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                Search: "{searchTerm}"
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setSearchTerm('')} />
+              </Badge>
+            )}
+            {selectedCategory !== 'all' && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                Category: {selectedCategory}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCategory('all')} />
+              </Badge>
+            )}
+            {selectedCondition !== 'all' && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                Condition: {selectedCondition}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCondition('all')} />
+              </Badge>
+            )}
+            {selectedLocation !== 'all' && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                Location: {selectedLocation}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedLocation('all')} />
+              </Badge>
+            )}
+            {selectedTags.map(tag => (
+              <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                Tag: {tag}
+                <X className="h-3 w-3 cursor-pointer" onClick={() => handleTagToggle(tag)} />
+              </Badge>
+            ))}
+            <Button variant="ghost" size="sm" onClick={clearAllFilters}>
+              Clear all
+            </Button>
+          </div>
+        )}
       </div>
 
       {hasFilters && (
@@ -156,12 +270,7 @@ const SearchPage = () => {
             </h2>
             <Button 
               variant="outline" 
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('all');
-                setSelectedCondition('all');
-                setSelectedLocation('all');
-              }}
+              onClick={clearAllFilters}
             >
               Clear Filters
             </Button>
