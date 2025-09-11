@@ -187,6 +187,8 @@ export const useAuth = () => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('currentUser');
+    // Force a clean state reset
+    window.location.href = '/';
   };
 
   const getAllUsers = () => {
