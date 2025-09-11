@@ -1,15 +1,33 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar, User, Package, Filter, Search } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth } from '@/hooks/useAuth';
 import { mockHistory, mockArtifacts } from '@/data/mockArtifacts';
 
 const History = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAction, setSelectedAction] = useState('all');
+
+  // Only admins can view history
+  if (user?.role !== 'admin') {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Access Denied</CardTitle>
+            <CardDescription>
+              Only administrators can view the edit history.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
   
   const filteredHistory = mockHistory.filter(entry => {
     const artifact = mockArtifacts.find(a => a.id === entry.artifactId);
