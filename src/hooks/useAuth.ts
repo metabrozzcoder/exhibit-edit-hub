@@ -95,8 +95,23 @@ export const useAuth = () => {
   const [users, setUsers] = useState<User[]>(mockUsers);
 
   useEffect(() => {
-    // Load user on mount
+    // Load users and current user on mount
+    const savedUsers = localStorage.getItem('allUsers');
     const savedUser = localStorage.getItem('currentUser');
+    
+    if (savedUsers) {
+      try {
+        setUsers(JSON.parse(savedUsers));
+      } catch (error) {
+        console.error('Error loading users from localStorage:', error);
+        setUsers(mockUsers);
+        localStorage.setItem('allUsers', JSON.stringify(mockUsers));
+      }
+    } else {
+      setUsers(mockUsers);
+      localStorage.setItem('allUsers', JSON.stringify(mockUsers));
+    }
+
     setTimeout(() => {
       if (savedUser) {
         setUser(JSON.parse(savedUser));
@@ -111,6 +126,10 @@ export const useAuth = () => {
     };
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'currentUser') handleAuthChanged();
+      if (e.key === 'allUsers') {
+        const storedUsers = e.newValue ? JSON.parse(e.newValue) : mockUsers;
+        setUsers(storedUsers);
+      }
     };
 
     document.addEventListener('auth:changed', handleAuthChanged as EventListener);
@@ -237,26 +256,36 @@ export const useAuth = () => {
       isActive: true,
     };
 
-    setUsers(prev => [...prev, newUser]);
+    const updatedUsers = [...users, newUser];
+    setUsers(updatedUsers);
+    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
   };
 
   const updateUserRole = async (userId: string, newRole: UserRole) => {
-    // Replace with Firebase admin functions
-    setUsers(prev => prev.map(u => 
+    const updatedUsers = users.map(u => 
       u.id === userId ? { ...u, role: newRole } : u
-    ));
+    );
+    setUsers(updatedUsers);
+    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
   };
 
   const toggleUserActive = async (userId: string) => {
-    // Replace with Firebase admin functions
-    setUsers(prev => prev.map(u => 
+    const updatedUsers = users.map(u => 
       u.id === userId ? { ...u, isActive: !u.isActive } : u
-    ));
+    );
+    setUsers(updatedUsers);
+    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
   };
 
   const deleteUser = async (userId: string) => {
-    // Replace with Firebase admin functions
-    setUsers(prev => prev.filter(u => u.id !== userId));
+    const updatedUsers = users.filter(u => u.id !== userId);
+    setUsers(updatedUsers);
+    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+    
+    // If the deleted user is the current user, log them out
+    if (user?.id === userId) {
+      logout();
+    }
   };
 
   const changePassword = async (currentPassword: string, newPassword: string) => {
