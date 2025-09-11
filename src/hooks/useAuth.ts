@@ -95,7 +95,7 @@ export const useAuth = () => {
   const [users, setUsers] = useState<User[]>(mockUsers);
 
   useEffect(() => {
-    // Simulate loading user from Firebase
+    // Load user on mount
     const savedUser = localStorage.getItem('currentUser');
     setTimeout(() => {
       if (savedUser) {
@@ -103,6 +103,23 @@ export const useAuth = () => {
       }
       setIsLoading(false);
     }, 1000);
+
+    // Listen for auth changes across the app (same-tab and cross-tab)
+    const handleAuthChanged = (_e?: Event) => {
+      const stored = localStorage.getItem('currentUser');
+      setUser(stored ? JSON.parse(stored) : null);
+    };
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'currentUser') handleAuthChanged();
+    };
+
+    document.addEventListener('auth:changed', handleAuthChanged as EventListener);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      document.removeEventListener('auth:changed', handleAuthChanged as EventListener);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   const permissions = user ? rolePermissions[user.role] : null;
@@ -119,6 +136,7 @@ export const useAuth = () => {
           const updatedUser = { ...adminUser, lastLogin: new Date().toISOString().split('T')[0] };
           setUser(updatedUser);
           localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          document.dispatchEvent(new Event('auth:changed'));
           setIsLoading(false);
           resolve();
         }, 1000);
@@ -132,6 +150,7 @@ export const useAuth = () => {
           const updatedUser = { ...foundUser, lastLogin: new Date().toISOString().split('T')[0] };
           setUser(updatedUser);
           localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          document.dispatchEvent(new Event('auth:changed'));
           setIsLoading(false);
           resolve();
         }, 1000);
@@ -187,8 +206,7 @@ export const useAuth = () => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('currentUser');
-    // Force a clean state reset
-    window.location.href = '/';
+    document.dispatchEvent(new Event('auth:changed'));
   };
 
   const getAllUsers = () => {
