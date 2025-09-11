@@ -5,7 +5,7 @@ import { User, UserRole, Permission } from '@/types/artifact';
 const mockUsers: User[] = [
   {
     id: '1',
-    email: 'admin@museum.org',
+    email: 'admin',
     name: 'Admin User',
     role: 'admin',
     department: 'Administration',
@@ -15,6 +15,16 @@ const mockUsers: User[] = [
   },
   {
     id: '2',
+    email: 'admin@museum.org',
+    name: 'Museum Admin',
+    role: 'admin',
+    department: 'Administration',
+    createdAt: '2024-01-01',
+    lastLogin: '2024-12-10',
+    isActive: true,
+  },
+  {
+    id: '3',
     email: 'curator@museum.org',
     name: 'Jane Smith',
     role: 'curator',
@@ -24,7 +34,7 @@ const mockUsers: User[] = [
     isActive: true,
   },
   {
-    id: '3',
+    id: '4',
     email: 'researcher@museum.org',
     name: 'John Doe',
     role: 'researcher',
@@ -34,7 +44,7 @@ const mockUsers: User[] = [
     isActive: true,
   },
   {
-    id: '4',
+    id: '5',
     email: 'viewer@museum.org',
     name: 'Alice Johnson',
     role: 'viewer',
@@ -101,7 +111,20 @@ export const useAuth = () => {
     // Replace with Firebase auth
     setIsLoading(true);
     
-    // Simulate authentication
+    // Simple admin credentials for testing
+    if ((email === 'admin' && password === 'admin') || 
+        (email === 'admin@museum.org' && password === 'admin')) {
+      setTimeout(() => {
+        const adminUser = users.find(u => u.email === email) || users[0];
+        const updatedUser = { ...adminUser, lastLogin: new Date().toISOString().split('T')[0] };
+        setUser(updatedUser);
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        setIsLoading(false);
+      }, 1000);
+      return;
+    }
+
+    // Simulate authentication for other users
     const foundUser = users.find(u => u.email === email);
     if (foundUser && foundUser.isActive) {
       setTimeout(() => {
