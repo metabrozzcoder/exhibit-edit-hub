@@ -63,7 +63,7 @@ const Sidebar = ({ className }: SidebarProps) => {
       name: 'Users',
       href: '/users',
       icon: Users,
-      show: permissions?.canManageUsers,
+      show: user?.role === 'admin',
     },
     {
       name: 'Admin Profile',

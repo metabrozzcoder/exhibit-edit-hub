@@ -185,13 +185,15 @@ const UsersPage = () => {
           </p>
         </div>
         
-        <Button 
-          onClick={handleAddUser}
-          className="bg-museum-gold hover:bg-museum-gold/90"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add User
-        </Button>
+        {permissions?.canManageUsers && (
+          <Button 
+            onClick={handleAddUser}
+            className="bg-museum-gold hover:bg-museum-gold/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add User
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -273,17 +275,23 @@ const UsersPage = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Select value={user.role} onValueChange={(value: UserRole) => handleUpdateRole(user.id, value)}>
-                    <SelectTrigger className="w-28">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="viewer">Viewer</SelectItem>
-                      <SelectItem value="researcher">Researcher</SelectItem>
-                      <SelectItem value="curator">Curator</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {permissions?.canManageUsers && (
+                    <Select 
+                      value={user.role} 
+                      onValueChange={(value: UserRole) => handleUpdateRole(user.id, value)}
+                      disabled={user.role === 'admin' && user.id === user?.id}
+                    >
+                      <SelectTrigger className="w-28">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="viewer">Viewer</SelectItem>
+                        <SelectItem value="researcher">Researcher</SelectItem>
+                        <SelectItem value="curator">Curator</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                   
                   <Button
                     variant="outline"
@@ -294,17 +302,19 @@ const UsersPage = () => {
                     <Edit className="h-3 w-3" />
                   </Button>
                   
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleToggleActive(user.id)}
-                    className={user.isActive ? "text-orange-600" : "text-green-600"}
-                    title={user.isActive ? "Deactivate user" : "Activate user"}
-                  >
-                    {user.isActive ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
-                  </Button>
+                  {permissions?.canManageUsers && user.role !== 'admin' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleToggleActive(user.id)}
+                      className={user.isActive ? "text-orange-600" : "text-green-600"}
+                      title={user.isActive ? "Deactivate user" : "Activate user"}
+                    >
+                      {user.isActive ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+                    </Button>
+                  )}
                   
-                  {user.role !== 'admin' && (
+                  {permissions?.canManageUsers && user.role !== 'admin' && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button

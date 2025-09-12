@@ -42,15 +42,7 @@ export type Database = {
           id?: string
           notes?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "artifact_history_artifact_id_fkey"
-            columns: ["artifact_id"]
-            isOneToOne: false
-            referencedRelation: "artifacts"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       artifacts: {
         Row: {
