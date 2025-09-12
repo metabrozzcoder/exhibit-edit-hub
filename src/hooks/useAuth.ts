@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User as SupaUser, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { User as LegacyUser, UserRole, Permission } from '@/types/artifact';
+import { useRealtime } from './useRealtime';
 
 interface Profile {
   id: string;
@@ -73,6 +74,14 @@ export const useAuth = () => {
       setAllUsers(mapped);
     }
   };
+
+  // Set up real-time synchronization for profiles
+  useRealtime(
+    'profiles',
+    () => fetchAllUsers(), // on insert
+    () => fetchAllUsers(), // on update
+    () => fetchAllUsers()  // on delete
+  );
 
   const fetchProfileAndUsers = async (userId: string) => {
     const { data: profileData } = await supabase

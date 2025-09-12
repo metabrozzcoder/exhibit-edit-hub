@@ -5,13 +5,48 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Settings, Bell, Database, Lock, Download, Palette } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useSettings } from '@/hooks/useSettings';
+import { useAuth } from '@/hooks/useAuth';
 
 const SettingsPage = () => {
-  const handleSaveSettings = () => {
-    toast({
-      title: "Settings saved",
-      description: "Your preferences have been updated successfully.",
-    });
+  const { user } = useAuth();
+  const { settings, isLoading, saveSettings } = useSettings();
+
+  const handleSettingChange = async (key: string, value: boolean) => {
+    if (!settings) return;
+    
+    try {
+      await saveSettings({ [key]: value });
+      toast({
+        title: "Setting updated",
+        description: "Your preference has been saved.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save setting. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveAllSettings = async () => {
+    try {
+      // Save all current settings
+      if (settings) {
+        await saveSettings(settings);
+        toast({
+          title: "Settings saved",
+          description: "All your preferences have been updated successfully.",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleBackup = () => {
@@ -20,6 +55,14 @@ const SettingsPage = () => {
       description: "Database backup has been generated and downloaded.",
     });
   };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-64">Loading settings...</div>;
+  }
+
+  if (!user) {
+    return <div className="flex items-center justify-center h-64">Please log in to access settings.</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -48,7 +91,10 @@ const SettingsPage = () => {
                     Receive notifications about collection updates
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={settings?.emailNotifications ?? true}
+                  onCheckedChange={(checked) => handleSettingChange('emailNotifications', checked)}
+                />
               </div>
               
               <Separator />
@@ -60,7 +106,10 @@ const SettingsPage = () => {
                     Automatically save artifact changes
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={settings?.autoSave ?? true}
+                  onCheckedChange={(checked) => handleSettingChange('autoSave', checked)}
+                />
               </div>
               
               <Separator />
@@ -72,7 +121,10 @@ const SettingsPage = () => {
                     Display advanced management options
                   </div>
                 </div>
-                <Switch />
+                <Switch 
+                  checked={settings?.advancedFeatures ?? false}
+                  onCheckedChange={(checked) => handleSettingChange('advancedFeatures', checked)}
+                />
               </div>
             </div>
           </CardContent>
@@ -109,7 +161,10 @@ const SettingsPage = () => {
                     Automatically log out after 30 minutes of inactivity
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={settings?.sessionTimeout ?? true}
+                  onCheckedChange={(checked) => handleSettingChange('sessionTimeout', checked)}
+                />
               </div>
               
               <Separator />
@@ -121,7 +176,10 @@ const SettingsPage = () => {
                     Track all user actions for security purposes
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={settings?.auditLogging ?? true}
+                  onCheckedChange={(checked) => handleSettingChange('auditLogging', checked)}
+                />
               </div>
             </div>
           </CardContent>
@@ -186,7 +244,7 @@ const SettingsPage = () => {
         {/* Save Button */}
         <div className="flex justify-end">
           <Button 
-            onClick={handleSaveSettings}
+            onClick={handleSaveAllSettings}
             className="bg-museum-gold hover:bg-museum-gold/90"
           >
             Save All Settings

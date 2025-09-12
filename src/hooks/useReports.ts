@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Report, ReportType, ReportPriority, ReportStatus } from '@/types/report';
+import { useRealtime } from './useRealtime';
 
 export const useReports = () => {
   const [reports, setReports] = useState<Report[]>([]);
@@ -9,6 +10,14 @@ export const useReports = () => {
   useEffect(() => {
     fetchReports();
   }, []);
+
+  // Set up real-time synchronization
+  useRealtime(
+    'reports',
+    () => fetchReports(), // on insert
+    () => fetchReports(), // on update
+    () => fetchReports()  // on delete
+  );
 
   const fetchReports = async () => {
     try {

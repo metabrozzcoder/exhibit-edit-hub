@@ -246,6 +246,48 @@ export type Database = {
           },
         ]
       }
+      user_settings: {
+        Row: {
+          advanced_features: boolean
+          audit_logging: boolean
+          auto_save: boolean
+          created_at: string
+          email_notifications: boolean
+          id: string
+          session_timeout: boolean
+          theme_preference: string | null
+          two_factor_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          advanced_features?: boolean
+          audit_logging?: boolean
+          auto_save?: boolean
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          session_timeout?: boolean
+          theme_preference?: string | null
+          two_factor_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          advanced_features?: boolean
+          audit_logging?: boolean
+          auto_save?: boolean
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          session_timeout?: boolean
+          theme_preference?: string | null
+          two_factor_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

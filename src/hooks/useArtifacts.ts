@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Artifact } from '@/types/artifact';
+import { useRealtime } from './useRealtime';
 
 export const useArtifacts = () => {
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
@@ -9,6 +10,14 @@ export const useArtifacts = () => {
   useEffect(() => {
     fetchArtifacts();
   }, []);
+
+  // Set up real-time synchronization
+  useRealtime(
+    'artifacts',
+    () => fetchArtifacts(), // on insert
+    () => fetchArtifacts(), // on update
+    () => fetchArtifacts()  // on delete
+  );
 
   const fetchArtifacts = async () => {
     try {
