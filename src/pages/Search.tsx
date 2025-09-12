@@ -9,6 +9,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ArtifactCard from '@/components/artifacts/ArtifactCard';
+import AddArtifactForm from '@/components/artifacts/AddArtifactForm';
+import ArtifactDetailsDialog from '@/components/artifacts/ArtifactDetailsDialog';
 import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -23,6 +25,9 @@ const SearchPage = () => {
   const [selectedLocation, setSelectedLocation] = useState('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null);
+  const [viewingArtifact, setViewingArtifact] = useState<Artifact | null>(null);
   
   const quickSearches = [
     { 
@@ -89,11 +94,8 @@ const SearchPage = () => {
   };
 
   const handleEdit = (artifact: Artifact) => {
-    // For now, just show a toast. This could be expanded to open an edit modal
-    toast({
-      title: "Edit functionality",
-      description: `Edit form for ${artifact.title} would open here.`,
-    });
+    setEditingArtifact(artifact);
+    setShowAddForm(true);
   };
 
   const handleDelete = (artifactId: string) => {
@@ -107,10 +109,7 @@ const SearchPage = () => {
   };
 
   const handleView = (artifact: Artifact) => {
-    toast({
-      title: "Artifact details",
-      description: `Viewing ${artifact.title} (${artifact.accessionNumber})`,
-    });
+    setViewingArtifact(artifact);
   };
 
   const hasFilters = searchTerm || selectedCategory !== 'all' || selectedCondition !== 'all' || selectedLocation !== 'all' || selectedTags.length > 0;
@@ -289,6 +288,39 @@ const SearchPage = () => {
           </div>
         )}
       </div>
+
+      {showAddForm && (
+        <AddArtifactForm
+          mode={editingArtifact ? 'edit' : 'create'}
+          initialData={editingArtifact || undefined}
+          onSave={(artifactData) => {
+            if (editingArtifact) {
+              updateArtifact(editingArtifact.id, artifactData);
+              toast({
+                title: 'Artifact updated',
+                description: 'The artifact has been successfully updated.',
+              });
+            }
+            setShowAddForm(false);
+            setEditingArtifact(null);
+          }}
+          onClose={() => {
+            setShowAddForm(false);
+            setEditingArtifact(null);
+          }}
+        />
+      )}
+
+      <ArtifactDetailsDialog
+        open={!!viewingArtifact}
+        artifact={viewingArtifact}
+        onClose={() => setViewingArtifact(null)}
+        onEdit={(artifact) => {
+          setViewingArtifact(null);
+          setEditingArtifact(artifact);
+          setShowAddForm(true);
+        }}
+      />
 
       {hasFilters && (
         <div className="space-y-4">

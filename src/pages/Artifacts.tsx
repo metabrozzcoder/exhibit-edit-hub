@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import ArtifactCard from '@/components/artifacts/ArtifactCard';
 import AddArtifactForm from '@/components/artifacts/AddArtifactForm';
+import ArtifactDetailsDialog from '@/components/artifacts/ArtifactDetailsDialog';
 import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { Artifact } from '@/types/artifact';
@@ -29,6 +30,7 @@ const Artifacts = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null);
+  const [viewingArtifact, setViewingArtifact] = useState<Artifact | null>(null);
   
   const filteredArtifacts = filterArtifacts({
     searchTerm,
@@ -60,12 +62,7 @@ const Artifacts = () => {
   };
 
   const handleView = (artifact: Artifact) => {
-    // For now, just show details in console. Can be expanded to a detail modal
-    console.log('Viewing artifact:', artifact);
-    toast({
-      title: "Artifact details",
-      description: `Viewing ${artifact.title} (${artifact.accessionNumber})`,
-    });
+    setViewingArtifact(artifact);
   };
 
   const handleSave = (artifactData: Partial<Artifact>) => {
@@ -267,6 +264,17 @@ const Artifacts = () => {
           }}
         />
       )}
+
+      <ArtifactDetailsDialog
+        open={!!viewingArtifact}
+        artifact={viewingArtifact}
+        onClose={() => setViewingArtifact(null)}
+        onEdit={(artifact) => {
+          setViewingArtifact(null);
+          setEditingArtifact(artifact);
+          setShowAddForm(true);
+        }}
+      />
     </div>
   );
 };
