@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User as SupaUser, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { UserRole, Permission } from '@/types/artifact';
+import { User as LegacyUser, UserRole, Permission } from '@/types/artifact';
 
 interface Profile {
   id: string;
@@ -48,17 +48,38 @@ const rolePermissions: Record<UserRole, Permission> = {
 };
 
 export const useAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [authUser, setAuthUser] = useState<SupaUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [user, setUser] = useState<LegacyUser | null>(null);
+  const [allUsers, setAllUsers] = useState<LegacyUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const mapProfileToLegacy = (p: Profile): LegacyUser => ({
+    id: p.user_id,
+    email: p.email,
+    name: p.name,
+    role: p.role,
+    department: p.department,
+    createdAt: p.created_at,
+    lastLogin: p.last_login,
+    isActive: p.is_active,
+  });
+
+  const fetchAllUsers = async () => {
+    const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+    if (!error && data) {
+      const mapped = data.map((d: any) => mapProfileToLegacy({ ...d, role: (d.role as UserRole) }));
+      setAllUsers(mapped);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         setSession(session);
-        setUser(session?.user ?? null);
+        setAuthUser(session?.user ?? null);
         
         if (session?.user) {
           // Fetch user profile
@@ -66,10 +87,19 @@ export const useAuth = () => {
             .from('profiles')
             .select('*')
             .eq('user_id', session.user.id)
-            .single();
-          setProfile(profileData);
+            .maybeSingle();
+          if (profileData) {
+            const normalized: Profile = { ...profileData, role: (profileData.role as UserRole) };
+            setProfile(normalized);
+            setUser(mapProfileToLegacy(normalized));
+          } else {
+            setProfile(null);
+            setUser(null);
+          }
+          fetchAllUsers();
         } else {
           setProfile(null);
+          setUser(null);
         }
         
         setIsLoading(false);
@@ -77,29 +107,30 @@ export const useAuth = () => {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      setAuthUser(session?.user ?? null);
       
       if (session?.user) {
-        supabase
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', session.user.id)
-          .single()
-          .then(({ data: profileData }) => {
-            setProfile(profileData);
-            setIsLoading(false);
-          });
-      } else {
-        setIsLoading(false);
+          .maybeSingle();
+        if (profileData) {
+          const normalized: Profile = { ...profileData, role: (profileData.role as UserRole) };
+          setProfile(normalized);
+          setUser(mapProfileToLegacy(normalized));
+        }
+        fetchAllUsers();
       }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const permissions = profile ? rolePermissions[profile.role as UserRole] : rolePermissions.viewer;
+  const permissions = user ? rolePermissions[user.role as UserRole] : rolePermissions.viewer;
 
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -135,6 +166,65 @@ export const useAuth = () => {
 
   const logout = async () => {
     await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+  };
+
+  // Admin helpers
+  const getAllUsers = () => allUsers;
+
+  const createUser = async (formData: { name: string; email: string; department: string; role: UserRole; tempPassword: string; }) => {
+    const redirectUrl = `${window.location.origin}/`;
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.tempPassword,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          name: formData.name,
+          department: formData.department,
+          role: formData.role,
+        }
+      }
+    });
+    if (error) throw error;
+
+    const newUserId = data.user?.id;
+    if (newUserId) {
+      await supabase.from('profiles').update({
+        name: formData.name,
+        department: formData.department,
+        role: formData.role,
+        is_active: true,
+      }).eq('user_id', newUserId);
+    }
+
+    await fetchAllUsers();
+  };
+
+  const updateUserRole = async (userId: string, newRole: UserRole) => {
+    const { error } = await supabase.from('profiles').update({ role: newRole }).eq('user_id', userId);
+    if (error) throw error;
+    await fetchAllUsers();
+  };
+
+  const toggleUserActive = async (userId: string) => {
+    const { data } = await supabase.from('profiles').select('is_active').eq('user_id', userId).maybeSingle();
+    const current = (data as any)?.is_active ?? true;
+    const { error } = await supabase.from('profiles').update({ is_active: !current }).eq('user_id', userId);
+    if (error) throw error;
+    await fetchAllUsers();
+  };
+
+  const deleteUser = async (userId: string) => {
+    const { error } = await supabase.from('profiles').update({ is_active: false }).eq('user_id', userId);
+    if (error) throw error;
+    await fetchAllUsers();
+  };
+
+  const changePassword = async (_currentPassword: string, newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
   };
 
   return {
@@ -143,9 +233,15 @@ export const useAuth = () => {
     session,
     isLoading,
     permissions,
-    isAuthenticated: !!user,
+    isAuthenticated: !!session,
     login,
     register,
     logout,
+    getAllUsers,
+    createUser,
+    updateUserRole,
+    toggleUserActive,
+    deleteUser,
+    changePassword,
   };
 };
