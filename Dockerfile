@@ -18,6 +18,9 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Verify build output exists
+RUN ls -la /app/dist/ && test -f /app/dist/index.html
+
 # Stage 2: Production stage
 FROM nginx:alpine AS production
 
