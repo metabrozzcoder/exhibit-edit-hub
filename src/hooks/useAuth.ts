@@ -169,9 +169,24 @@ export const useAuth = () => {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
+    try {
+      // Clear local state first to prevent UI issues
+      setUser(null);
+      setProfile(null);
+      setSession(null);
+      setAllUsers([]);
+      
+      // Attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      // Don't throw on session_not_found errors as user is already logged out
+      if (error && error.message !== 'Session from session_id claim in JWT does not exist') {
+        console.warn('Logout error:', error);
+      }
+    } catch (error) {
+      console.warn('Logout error:', error);
+      // Even if logout fails, user state is cleared locally
+    }
   };
 
   // Admin helpers
