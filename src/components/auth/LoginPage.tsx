@@ -54,7 +54,7 @@ const LoginPage = () => {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Building className="h-8 w-8 text-museum-gold" />
-            <span className="text-2xl font-bold text-museum-bronze">Museum CRM</span>
+            <span className="text-2xl font-bold text-museum-bronze">ARIMUS</span>
           </div>
           <CardTitle>Sign In</CardTitle>
           <CardDescription>

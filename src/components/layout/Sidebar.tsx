@@ -91,7 +91,7 @@ const Sidebar = ({ className }: SidebarProps) => {
         {!collapsed && (
           <div className="flex items-center gap-2">
             <Building className="h-6 w-6 text-museum-gold" />
-            <span className="font-semibold text-museum-bronze">Museum CRM</span>
+            <span className="font-semibold text-museum-bronze">ARIMUS</span>
           </div>
         )}
         <Button
