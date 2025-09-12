@@ -14,7 +14,7 @@ import { User, UserRole } from '@/types/artifact';
 import UserCredentialsDisplay from '@/components/auth/UserCredentialsDisplay';
 
 const UsersPage = () => {
-  const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions } = useAuth();
+  const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions, user: currentUser } = useAuth();
   const { toast } = useToast();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -175,6 +175,18 @@ const UsersPage = () => {
     }
   };
 
+  // Access control - only admins can access user management
+  if (!permissions?.canManageUsers) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-museum-bronze mb-4">Access Denied</h1>
+          <p className="text-muted-foreground">You don't have permission to access user management.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -279,7 +291,6 @@ const UsersPage = () => {
                     <Select 
                       value={user.role} 
                       onValueChange={(value: UserRole) => handleUpdateRole(user.id, value)}
-                      disabled={user.role === 'admin' && user.id === user?.id}
                     >
                       <SelectTrigger className="w-28">
                         <SelectValue />
@@ -297,7 +308,7 @@ const UsersPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEditUser(user.id)}
-                    title="Edit user details"
+                    title="View user details"
                   >
                     <Edit className="h-3 w-3" />
                   </Button>
