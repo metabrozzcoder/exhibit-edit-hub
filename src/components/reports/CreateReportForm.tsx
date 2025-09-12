@@ -9,6 +9,7 @@ import { toast } from '@/hooks/use-toast';
 import { useReports } from '@/hooks/useReports';
 import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 import { ReportType, ReportPriority, ReportStatus } from '@/types/report';
 import { Save, FileText } from 'lucide-react';
 
@@ -21,6 +22,7 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
   const { createReport } = useReports();
   const { artifacts } = useArtifacts();
   const { user } = useAuth();
+  const { notifyReportCreated, notifyError } = useNotifications();
   
   const [formData, setFormData] = useState({
     artifactId: selectedArtifactId || '',
@@ -52,11 +54,13 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
     setIsSubmitting(true);
 
     try {
-      createReport({
+      const newReport = createReport({
         ...formData,
         artifactTitle: selectedArtifact?.title || 'Unknown Artifact',
         createdBy: user?.name || 'Unknown User'
       });
+
+      notifyReportCreated(formData.title, newReport?.id || 'new-report');
 
       toast({
         title: "Report Created",
@@ -77,6 +81,7 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
 
       onReportCreated?.();
     } catch (error) {
+      notifyError('Failed to create report', 'An error occurred while creating your report. Please try again.');
       toast({
         title: "Error",
         description: "Failed to create report. Please try again.",

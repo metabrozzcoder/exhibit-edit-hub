@@ -10,10 +10,12 @@ import AddArtifactForm from '@/components/artifacts/AddArtifactForm';
 import ArtifactDetailsDialog from '@/components/artifacts/ArtifactDetailsDialog';
 import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 import { Artifact } from '@/types/artifact';
 
 const Artifacts = () => {
   const { permissions } = useAuth();
+  const { notifyArtifactAdded, notifyArtifactUpdated, notifyArtifactDeleted } = useNotifications();
   const { 
     artifacts, 
     filterArtifacts, 
@@ -52,8 +54,12 @@ const Artifacts = () => {
   };
 
   const handleDelete = (artifactId: string) => {
+    const artifact = artifacts.find(a => a.id === artifactId);
     if (confirm('Are you sure you want to delete this artifact? This action cannot be undone.')) {
       deleteArtifact(artifactId);
+      if (artifact) {
+        notifyArtifactDeleted(artifact.title, artifact.accessionNumber);
+      }
       toast({
         title: "Artifact deleted",
         description: "The artifact has been successfully removed from the collection.",
@@ -69,6 +75,7 @@ const Artifacts = () => {
     if (editingArtifact) {
       // Update existing artifact
       updateArtifact(editingArtifact.id, artifactData);
+      notifyArtifactUpdated(artifactData.title || editingArtifact.title, artifactData.accessionNumber || editingArtifact.accessionNumber);
       toast({
         title: "Artifact updated",
         description: "The artifact has been successfully updated.",
@@ -76,6 +83,7 @@ const Artifacts = () => {
     } else {
       // Add new artifact
       addArtifact(artifactData);
+      notifyArtifactAdded(artifactData.title || 'New Artifact', artifactData.accessionNumber || 'Unknown');
       toast({
         title: "Artifact created",
         description: "New artifact has been added to the collection.",

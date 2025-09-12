@@ -11,9 +11,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import { User, UserRole } from '@/types/artifact';
 import { Eye, EyeOff, Plus, Edit, Trash2, UserCheck, UserX, Copy } from 'lucide-react';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const AdminProfile = () => {
   const { user, permissions, getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, changePassword } = useAuth();
+  const { notifyUserCreated, notifySuccess, notifyError } = useNotifications();
   const { toast } = useToast();
   
   const [showPassword, setShowPassword] = useState(false);
@@ -109,6 +111,7 @@ const AdminProfile = () => {
       const tempPassword = generatePassword();
       await createUser({ ...newUserForm, tempPassword });
       setGeneratedPassword(tempPassword);
+      notifyUserCreated(newUserForm.name, newUserForm.email);
       setNewUserForm({
         name: '',
         email: '',
@@ -121,6 +124,7 @@ const AdminProfile = () => {
         description: "User created with temporary password",
       });
     } catch (error) {
+      notifyError('Failed to create user', 'An error occurred while creating the user account.');
       toast({
         title: "Error",
         description: "Failed to create user",

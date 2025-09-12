@@ -14,33 +14,39 @@ import Settings from "./pages/Settings";
 import AdminProfile from "./components/auth/AdminProfile";
 import UserProfile from "./components/auth/UserProfile";
 import NotFound from "./pages/NotFound";
+import { useRealtimeNotifications } from "./hooks/useRealtimeNotifications";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/artifacts" element={<Artifacts />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/admin" element={<AdminProfile />} />
-            <Route path="/profile" element={<UserProfile />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  // Enable real-time notifications
+  useRealtimeNotifications();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/artifacts" element={<Artifacts />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<AdminProfile />} />
+              <Route path="/profile" element={<UserProfile />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
