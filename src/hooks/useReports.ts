@@ -120,12 +120,42 @@ export const useReports = () => {
 
   const deleteReport = async (reportId: string) => {
     try {
-      const { error } = await supabase
+      console.log('Attempting to delete report:', reportId);
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('Current user:', user?.id);
+      
+      // Get the report to check ownership
+      const { data: reportData, error: fetchError } = await supabase
+        .from('reports')
+        .select('created_by')
+        .eq('id', reportId)
+        .single();
+        
+      if (fetchError) {
+        console.error('Error fetching report:', fetchError);
+        throw fetchError;
+      }
+      
+      console.log('Report created_by:', reportData.created_by);
+      console.log('Current user ID:', user?.id);
+      console.log('Can delete?', reportData.created_by === user?.id);
+      
+      const { data, error } = await supabase
         .from('reports')
         .delete()
-        .eq('id', reportId);
+        .eq('id', reportId)
+        .select();
 
-      if (error) throw error;
+      console.log('Delete result:', { data, error });
+      
+      if (error) {
+        console.error('Delete error details:', error);
+        throw error;
+      }
+      
+      console.log('Successfully deleted report, refreshing...');
       await fetchReports();
     } catch (error) {
       console.error('Error deleting report:', error);
