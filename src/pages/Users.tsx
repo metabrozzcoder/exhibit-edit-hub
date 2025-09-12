@@ -289,6 +289,7 @@ const UsersPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEditUser(user.id)}
+                    title="Edit user details"
                   >
                     <Edit className="h-3 w-3" />
                   </Button>
@@ -298,6 +299,7 @@ const UsersPage = () => {
                     size="sm"
                     onClick={() => handleToggleActive(user.id)}
                     className={user.isActive ? "text-orange-600" : "text-green-600"}
+                    title={user.isActive ? "Deactivate user" : "Activate user"}
                   >
                     {user.isActive ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
                   </Button>

@@ -403,12 +403,13 @@ const AdminProfile = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => handleToggleActive(user.id)}
+                          title={user.isActive ? "Deactivate user" : "Activate user"}
                         >
                           {user.isActive ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" title="Delete user">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
