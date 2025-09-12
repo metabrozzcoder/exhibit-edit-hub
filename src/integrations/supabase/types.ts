@@ -14,7 +14,238 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      artifact_history: {
+        Row: {
+          action: string
+          artifact_id: string
+          changes: Json
+          edited_at: string
+          edited_by: string
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          action: string
+          artifact_id: string
+          changes?: Json
+          edited_at?: string
+          edited_by: string
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          action?: string
+          artifact_id?: string
+          changes?: Json
+          edited_at?: string
+          edited_by?: string
+          id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artifact_history_artifact_id_fkey"
+            columns: ["artifact_id"]
+            isOneToOne: false
+            referencedRelation: "artifacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artifacts: {
+        Row: {
+          accession_number: string
+          acquisition_date: string
+          acquisition_method: string
+          category: string
+          condition: string
+          conservation_notes: string | null
+          created_at: string
+          created_by: string
+          culture: string
+          depth: number | null
+          description: string
+          estimated_value: number | null
+          exhibition_history: string[] | null
+          height: number | null
+          id: string
+          image_url: string | null
+          last_edited_by: string
+          location: string
+          material: string
+          period: string
+          provenance: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          vitrine_image_url: string | null
+          weight: number | null
+          width: number | null
+        }
+        Insert: {
+          accession_number: string
+          acquisition_date: string
+          acquisition_method: string
+          category: string
+          condition: string
+          conservation_notes?: string | null
+          created_at?: string
+          created_by: string
+          culture: string
+          depth?: number | null
+          description: string
+          estimated_value?: number | null
+          exhibition_history?: string[] | null
+          height?: number | null
+          id?: string
+          image_url?: string | null
+          last_edited_by: string
+          location: string
+          material: string
+          period: string
+          provenance: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          vitrine_image_url?: string | null
+          weight?: number | null
+          width?: number | null
+        }
+        Update: {
+          accession_number?: string
+          acquisition_date?: string
+          acquisition_method?: string
+          category?: string
+          condition?: string
+          conservation_notes?: string | null
+          created_at?: string
+          created_by?: string
+          culture?: string
+          depth?: number | null
+          description?: string
+          estimated_value?: number | null
+          exhibition_history?: string[] | null
+          height?: number | null
+          id?: string
+          image_url?: string | null
+          last_edited_by?: string
+          location?: string
+          material?: string
+          period?: string
+          provenance?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          vitrine_image_url?: string | null
+          weight?: number | null
+          width?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          department: string | null
+          email: string
+          id: string
+          is_active: boolean
+          last_login: string | null
+          name: string
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          email: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          name: string
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          name?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          artifact_id: string
+          artifact_title: string
+          attachments: string[] | null
+          content: string
+          created_at: string
+          created_by: string
+          findings: string | null
+          id: string
+          priority: string
+          recommendations: string | null
+          report_type: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          artifact_id: string
+          artifact_title: string
+          attachments?: string[] | null
+          content: string
+          created_at?: string
+          created_by: string
+          findings?: string | null
+          id?: string
+          priority: string
+          recommendations?: string | null
+          report_type: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          artifact_id?: string
+          artifact_title?: string
+          attachments?: string[] | null
+          content?: string
+          created_at?: string
+          created_by?: string
+          findings?: string | null
+          id?: string
+          priority?: string
+          recommendations?: string | null
+          report_type?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_artifact_id_fkey"
+            columns: ["artifact_id"]
+            isOneToOne: false
+            referencedRelation: "artifacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
