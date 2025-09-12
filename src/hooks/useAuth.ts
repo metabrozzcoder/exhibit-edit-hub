@@ -74,57 +74,52 @@ export const useAuth = () => {
     }
   };
 
+  const fetchProfileAndUsers = async (userId: string) => {
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (profileData) {
+      const normalized: Profile = { ...profileData, role: (profileData.role as UserRole) };
+      setProfile(normalized);
+      setUser(mapProfileToLegacy(normalized));
+    } else {
+      setProfile(null);
+      setUser(null);
+    }
+
+    await fetchAllUsers();
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         setSession(session);
         setAuthUser(session?.user ?? null);
-        
         if (session?.user) {
-          // Fetch user profile
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-          if (profileData) {
-            const normalized: Profile = { ...profileData, role: (profileData.role as UserRole) };
-            setProfile(normalized);
-            setUser(mapProfileToLegacy(normalized));
-          } else {
-            setProfile(null);
-            setUser(null);
-          }
-          fetchAllUsers();
+          setTimeout(() => {
+            fetchProfileAndUsers(session.user!.id);
+          }, 0);
         } else {
           setProfile(null);
           setUser(null);
         }
-        
         setIsLoading(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setAuthUser(session?.user ?? null);
-      
       if (session?.user) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-        if (profileData) {
-          const normalized: Profile = { ...profileData, role: (profileData.role as UserRole) };
-          setProfile(normalized);
-          setUser(mapProfileToLegacy(normalized));
-        }
-        fetchAllUsers();
+        fetchProfileAndUsers(session.user.id).finally(() => setIsLoading(false));
+      } else {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
