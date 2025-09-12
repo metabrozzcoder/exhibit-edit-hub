@@ -56,7 +56,7 @@ const ReportsList = () => {
   };
 
   const canDelete = (report: Report) => {
-    return user?.role === 'admin' || user?.name === report.createdBy;
+    return user?.role === 'admin' || user?.id === report.createdBy;
   };
 
   return (

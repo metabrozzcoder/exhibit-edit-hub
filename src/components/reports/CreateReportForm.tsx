@@ -54,10 +54,10 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
     setIsSubmitting(true);
 
     try {
-      const newReport = createReport({
+      const newReport = await createReport({
         ...formData,
         artifactTitle: selectedArtifact?.title || 'Unknown Artifact',
-        createdBy: user?.name || 'Unknown User'
+        createdBy: user?.id || 'Unknown User'
       });
 
       notifyReportCreated(formData.title, newReport?.id || 'new-report');

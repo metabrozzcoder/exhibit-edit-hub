@@ -174,32 +174,72 @@ export const useAuth = () => {
   const getAllUsers = () => allUsers;
 
   const createUser = async (formData: { name: string; email: string; department: string; role: UserRole; tempPassword: string; }) => {
-    const redirectUrl = `${window.location.origin}/`;
-    const { data, error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.tempPassword,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
+    try {
+      // Create the user account in Supabase Auth
+      const { data, error } = await supabase.auth.admin.createUser({
+        email: formData.email,
+        password: formData.tempPassword,
+        user_metadata: {
           name: formData.name,
           department: formData.department,
           role: formData.role,
         }
+      });
+
+      if (error) throw error;
+
+      // Create or update the profile with the correct data
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: data.user.id,
+            name: formData.name,
+            email: formData.email,
+            department: formData.department,
+            role: formData.role,
+            is_active: true,
+          });
+
+        if (profileError) throw profileError;
       }
-    });
-    if (error) throw error;
 
-    const newUserId = data.user?.id;
-    if (newUserId) {
-      await supabase.from('profiles').update({
-        name: formData.name,
-        department: formData.department,
-        role: formData.role,
-        is_active: true,
-      }).eq('user_id', newUserId);
+      await fetchAllUsers();
+      return data.user;
+    } catch (error) {
+      // Fallback to regular signup if admin API is not available
+      console.warn('Admin user creation failed, falling back to regular signup:', error);
+      
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.tempPassword,
+        options: {
+          data: {
+            name: formData.name,
+            department: formData.department,
+            role: formData.role,
+          }
+        }
+      });
+
+      if (signupError) throw signupError;
+
+      // Update profile with correct data
+      if (data.user) {
+        await supabase
+          .from('profiles')
+          .update({
+            name: formData.name,
+            department: formData.department,
+            role: formData.role,
+            is_active: true,
+          })
+          .eq('user_id', data.user.id);
+      }
+
+      await fetchAllUsers();
+      return data.user;
     }
-
-    await fetchAllUsers();
   };
 
   const updateUserRole = async (userId: string, newRole: UserRole) => {
@@ -217,8 +257,22 @@ export const useAuth = () => {
   };
 
   const deleteUser = async (userId: string) => {
-    const { error } = await supabase.from('profiles').update({ is_active: false }).eq('user_id', userId);
-    if (error) throw error;
+    try {
+      // Try to delete the user from auth (requires admin privileges)
+      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+      if (authError) {
+        console.warn('Could not delete auth user, marking as inactive:', authError);
+        // Fallback to marking as inactive
+        const { error } = await supabase.from('profiles').update({ is_active: false }).eq('user_id', userId);
+        if (error) throw error;
+      } else {
+        // If auth user was deleted, the profile will be cascade deleted by the foreign key
+      }
+    } catch (error) {
+      // Fallback to marking as inactive
+      const { error: updateError } = await supabase.from('profiles').update({ is_active: false }).eq('user_id', userId);
+      if (updateError) throw updateError;
+    }
     await fetchAllUsers();
   };
 

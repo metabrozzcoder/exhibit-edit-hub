@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { User, UserRole } from '@/types/artifact';
+import UserCredentialsDisplay from '@/components/auth/UserCredentialsDisplay';
 
 const UsersPage = () => {
   const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions } = useAuth();
@@ -21,6 +22,13 @@ const UsersPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [createdUser, setCreatedUser] = useState<{
+    name: string;
+    email: string;
+    role: string;
+    department?: string;
+  } | null>(null);
+  const [generatedPassword, setGeneratedPassword] = useState('');
   
   const [newUserForm, setNewUserForm] = useState({
     name: '',
@@ -80,6 +88,14 @@ const UsersPage = () => {
       const tempPassword = generatePassword();
       await createUser({ ...newUserForm, tempPassword });
       
+      setGeneratedPassword(tempPassword);
+      setCreatedUser({
+        name: newUserForm.name,
+        email: newUserForm.email,
+        role: newUserForm.role,
+        department: newUserForm.department,
+      });
+      
       setNewUserForm({
         name: '',
         email: '',
@@ -88,26 +104,14 @@ const UsersPage = () => {
       });
       setIsCreateDialogOpen(false);
       
-      // Show detailed password info with copy functionality
       toast({
         title: "User created successfully",
-        description: (
-          <div className="space-y-2">
-            <p>Temporary password for {newUserForm.name}:</p>
-            <div className="bg-muted p-2 rounded font-mono text-sm">
-              {tempPassword}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Please share this password with the user securely. They should change it on first login.
-            </p>
-          </div>
-        ),
-        duration: 10000, // Show for 10 seconds
+        description: `${newUserForm.name} can now login from any device with the provided credentials.`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create user",
+        description: "Failed to create user. Please try again.",
         variant: "destructive",
       });
     }
@@ -451,6 +455,20 @@ const UsersPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Credentials Display Modal */}
+      {createdUser && generatedPassword && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <UserCredentialsDisplay
+            user={createdUser}
+            password={generatedPassword}
+            onClose={() => {
+              setCreatedUser(null);
+              setGeneratedPassword('');
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

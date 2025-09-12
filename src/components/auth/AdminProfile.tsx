@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { User, UserRole } from '@/types/artifact';
 import { Eye, EyeOff, Plus, Edit, Trash2, UserCheck, UserX, Copy } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
+import UserCredentialsDisplay from './UserCredentialsDisplay';
 
 const AdminProfile = () => {
   const { user, permissions, getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, changePassword } = useAuth();
@@ -34,6 +35,12 @@ const AdminProfile = () => {
   });
 
   const [generatedPassword, setGeneratedPassword] = useState('');
+  const [createdUser, setCreatedUser] = useState<{
+    name: string;
+    email: string;
+    role: string;
+    department?: string;
+  } | null>(null);
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editRole, setEditRole] = useState<UserRole>('viewer');
@@ -109,8 +116,16 @@ const AdminProfile = () => {
 
     try {
       const tempPassword = generatePassword();
-      await createUser({ ...newUserForm, tempPassword });
+      const user = await createUser({ ...newUserForm, tempPassword });
+      
       setGeneratedPassword(tempPassword);
+      setCreatedUser({
+        name: newUserForm.name,
+        email: newUserForm.email,
+        role: newUserForm.role,
+        department: newUserForm.department,
+      });
+      
       notifyUserCreated(newUserForm.name, newUserForm.email);
       setNewUserForm({
         name: '',
@@ -119,15 +134,17 @@ const AdminProfile = () => {
         role: 'viewer',
         tempPassword: ''
       });
+      
       toast({
         title: "User created successfully",
-        description: "User created with temporary password",
+        description: `${newUserForm.name} can now login from any device with the provided credentials`,
       });
     } catch (error) {
+      console.error('Error creating user:', error);
       notifyError('Failed to create user', 'An error occurred while creating the user account.');
       toast({
         title: "Error",
-        description: "Failed to create user",
+        description: "Failed to create user. Please try again.",
         variant: "destructive",
       });
     }
@@ -331,42 +348,16 @@ const AdminProfile = () => {
                   </Button>
                 </form>
                 
-                {generatedPassword && (
-                  <div className="mt-6 p-4 bg-muted rounded-lg border">
-                    <h3 className="font-semibold text-sm mb-2 text-museum-gold">Generated Password</h3>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Save this password securely. The user will need it to log in.
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        value={generatedPassword}
-                        readOnly
-                        className="font-mono text-sm bg-background"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          navigator.clipboard.writeText(generatedPassword);
-                          toast({
-                            title: "Copied!",
-                            description: "Password copied to clipboard",
-                          });
-                        }}
-                      >
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setGeneratedPassword('')}
-                      >
-                        Clear
-                      </Button>
-                    </div>
+                {createdUser && generatedPassword && (
+                  <div className="mt-6">
+                    <UserCredentialsDisplay
+                      user={createdUser}
+                      password={generatedPassword}
+                      onClose={() => {
+                        setCreatedUser(null);
+                        setGeneratedPassword('');
+                      }}
+                    />
                   </div>
                 )}
               </CardContent>

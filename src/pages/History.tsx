@@ -36,7 +36,7 @@ const History = () => {
         id: item.id,
         artifactId: item.artifact_id,
         action: item.action as 'created' | 'updated' | 'deleted',
-        changes: item.changes || {},
+        changes: (item.changes || {}) as Record<string, { old: any; new: any }>,
         editedBy: item.edited_by,
         editedAt: item.edited_at,
         notes: item.notes,
