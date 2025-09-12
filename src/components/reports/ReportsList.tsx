@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useReports } from '@/hooks/useReports';
 import { useAuth } from '@/hooks/useAuth';
+import { useRealtime } from '@/hooks/useRealtime';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Report, ReportType, ReportStatus, ReportPriority } from '@/types/report';
@@ -22,6 +23,21 @@ const ReportsList = () => {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+
+  // Set up real-time updates
+  useRealtime(
+    'reports',
+    () => fetchUsers(), // Refresh users when reports change
+    () => fetchUsers(),
+    () => fetchUsers()
+  );
+
+  useRealtime(
+    'profiles',
+    () => fetchUsers(), // Refresh users when profiles change
+    () => fetchUsers(),
+    () => fetchUsers()
+  );
 
   const filteredReports = searchReports(searchTerm).filter(report => {
     const typeMatch = filterType === 'all' || report.reportType === filterType;
@@ -60,6 +76,11 @@ const ReportsList = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Refresh users when user context changes
+  useEffect(() => {
+    fetchUsers();
+  }, [user]);
 
   const fetchUsers = async () => {
     try {

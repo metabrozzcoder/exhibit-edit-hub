@@ -21,15 +21,37 @@ const History = () => {
   // Set up real-time updates for artifact history
   useRealtime(
     'artifact_history',
-    () => fetchHistory(), // On insert
-    () => fetchHistory(), // On update
-    () => fetchHistory()  // On delete
+    () => {
+      console.log('Real-time: New history entry added');
+      fetchHistory();
+    },
+    () => {
+      console.log('Real-time: History entry updated');
+      fetchHistory();
+    },
+    () => {
+      console.log('Real-time: History entry deleted');
+      fetchHistory();
+    }
+  );
+
+  // Also listen for artifact changes to update history
+  useRealtime(
+    'artifacts',
+    () => fetchHistory(), // New artifact
+    () => fetchHistory(), // Updated artifact
+    () => fetchHistory()  // Deleted artifact
   );
 
   useEffect(() => {
     fetchHistory();
     fetchUsers();
   }, []);
+
+  // Refresh data when user changes
+  useEffect(() => {
+    fetchUsers();
+  }, [profile]);
 
   const fetchUsers = async () => {
     try {
