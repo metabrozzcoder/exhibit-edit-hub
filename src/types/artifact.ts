@@ -38,6 +38,7 @@ export interface ArtifactHistory {
   editedBy: string;
   editedAt: string;
   notes?: string;
+  artifactTitle?: string;
 }
 
 export interface User {

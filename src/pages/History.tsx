@@ -6,41 +6,74 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
+import { useRealtime } from '@/hooks/useRealtime';
 import { supabase } from '@/integrations/supabase/client';
 import { ArtifactHistory } from '@/types/artifact';
 
 const History = () => {
   const { profile } = useAuth();
+  const [allUsers, setAllUsers] = useState<any[]>([]);
   const [history, setHistory] = useState<ArtifactHistory[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAction, setSelectedAction] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
 
+  // Set up real-time updates for artifact history
+  useRealtime(
+    'artifact_history',
+    () => fetchHistory(), // On insert
+    () => fetchHistory(), // On update
+    () => fetchHistory()  // On delete
+  );
+
   useEffect(() => {
     fetchHistory();
+    fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*');
+      
+      if (error) throw error;
+      setAllUsers(data || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
 
   const fetchHistory = async () => {
     try {
-      const { data, error } = await supabase
+      // First, get artifact history
+      const { data: historyData, error: historyError } = await supabase
         .from('artifact_history')
-        .select(`
-          *,
-          artifacts:artifact_id (title, accession_number)
-        `)
+        .select('*')
         .order('edited_at', { ascending: false });
 
-      if (error) throw error;
+      if (historyError) throw historyError;
 
-      const formattedHistory: ArtifactHistory[] = data.map(item => ({
-        id: item.id,
-        artifactId: item.artifact_id,
-        action: item.action as 'created' | 'updated' | 'deleted',
-        changes: (item.changes || {}) as Record<string, { old: any; new: any }>,
-        editedBy: item.edited_by,
-        editedAt: item.edited_at,
-        notes: item.notes,
-      }));
+      // Then get artifacts to match titles
+      const { data: artifactsData, error: artifactsError } = await supabase
+        .from('artifacts')
+        .select('id, title, accession_number');
+
+      if (artifactsError) throw artifactsError;
+
+      const formattedHistory: ArtifactHistory[] = historyData.map(item => {
+        const artifact = artifactsData.find(a => a.id === item.artifact_id);
+        return {
+          id: item.id,
+          artifactId: item.artifact_id,
+          action: item.action as 'created' | 'updated' | 'deleted',
+          changes: (item.changes || {}) as Record<string, { old: any; new: any }>,
+          editedBy: item.edited_by,
+          editedAt: item.edited_at,
+          notes: item.notes,
+          artifactTitle: artifact?.title || 'Unknown Artifact'
+        };
+      });
 
       setHistory(formattedHistory);
     } catch (error) {
@@ -66,9 +99,17 @@ const History = () => {
     );
   }
   
+  const getUserName = (userId: string) => {
+    const user = allUsers.find(u => u.user_id === userId);
+    return user ? user.name : userId;
+  };
+
   const filteredHistory = history.filter(entry => {
-    const matchesSearch = entry.editedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+    const userName = getUserName(entry.editedBy);
+    const matchesSearch = userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         entry.editedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         (entry.artifactTitle && entry.artifactTitle.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesAction = selectedAction === 'all' || entry.action === selectedAction;
     
@@ -159,7 +200,7 @@ const History = () => {
                         <div className="text-2xl">{getActionIcon(entry.action)}</div>
                         <div>
                           <CardTitle className="text-lg">
-                            Artifact Change
+                            {entry.artifactTitle}
                           </CardTitle>
                           <p className="text-sm text-muted-foreground">
                             ID: {entry.artifactId}
@@ -176,7 +217,7 @@ const History = () => {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <User className="h-3 w-3" />
-                        {entry.editedBy}
+                        {getUserName(entry.editedBy)}
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />

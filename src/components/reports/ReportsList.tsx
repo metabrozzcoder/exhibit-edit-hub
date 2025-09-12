@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useReports } from '@/hooks/useReports';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Report, ReportType, ReportStatus, ReportPriority } from '@/types/report';
 import { Search, Eye, Trash2, FileText, Calendar, User } from 'lucide-react';
@@ -16,6 +17,7 @@ import { format } from 'date-fns';
 const ReportsList = () => {
   const { reports, deleteReport, searchReports } = useReports();
   const { user } = useAuth();
+  const [allUsers, setAllUsers] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -53,6 +55,25 @@ const ReportsList = () => {
       title: "Report Deleted",
       description: "The report has been successfully deleted.",
     });
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const { data, error } = await supabase.from('profiles').select('*');
+      if (error) throw error;
+      setAllUsers(data || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  const getUserName = (userId: string) => {
+    const reportUser = allUsers.find(u => u.user_id === userId);
+    return reportUser ? reportUser.name : 'Unknown User';
   };
 
   const canDelete = (report: Report) => {
@@ -133,7 +154,7 @@ const ReportsList = () => {
                       <p className="font-medium">{report.title}</p>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <User className="h-3 w-3" />
-                        {report.createdBy}
+                        {getUserName(report.createdBy)}
                       </p>
                     </div>
                   </TableCell>
@@ -236,7 +257,7 @@ const ReportsList = () => {
                   </Badge>
                 </div>
                 <div>
-                  <span className="font-medium">Created by:</span> {selectedReport.createdBy}
+                  <span className="font-medium">Created by:</span> {getUserName(selectedReport.createdBy)}
                 </div>
                 <div>
                   <span className="font-medium">Created:</span> {format(new Date(selectedReport.createdAt), 'PPP')}
