@@ -170,6 +170,9 @@ export const useAuth = () => {
 
   const createUser = async (formData: { name: string; email: string; department: string; role: UserRole; tempPassword: string; }) => {
     try {
+      // Store current session to restore later
+      const currentSession = session;
+      
       // Create the user account in Supabase Auth
       const { data, error } = await supabase.auth.admin.createUser({
         email: formData.email,
@@ -202,7 +205,9 @@ export const useAuth = () => {
       await fetchAllUsers();
       return data.user;
     } catch (error) {
-      // Fallback to regular signup if admin API is not available
+      // Store current session to restore later
+      const currentSession = session;
+      
       console.warn('Admin user creation failed, falling back to regular signup:', error);
       
       const { data, error: signupError } = await supabase.auth.signUp({
@@ -230,6 +235,11 @@ export const useAuth = () => {
             is_active: true,
           })
           .eq('user_id', data.user.id);
+      }
+
+      // Restore the original admin session
+      if (currentSession) {
+        await supabase.auth.setSession(currentSession);
       }
 
       await fetchAllUsers();
