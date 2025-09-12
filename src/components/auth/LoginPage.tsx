@@ -100,18 +100,6 @@ const LoginPage = () => {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
-          
-          <div className="mt-6 p-4 bg-muted rounded-lg">
-            <h3 className="text-sm font-medium mb-2">Demo Credentials:</h3>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p><strong>Admin:</strong> admin / admin</p>
-              <p><strong>Curator:</strong> curator@museum.org / admin</p>
-              <p><strong>Researcher:</strong> researcher@museum.org / admin</p>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              New accounts are created by administrators only.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
