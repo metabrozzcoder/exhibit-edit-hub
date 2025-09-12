@@ -170,80 +170,29 @@ export const useAuth = () => {
 
   const createUser = async (formData: { name: string; email: string; department: string; role: UserRole; tempPassword: string; }) => {
     try {
-      // Store current session to restore later
-      const currentSession = session;
-      
-      // Create the user account in Supabase Auth
-      const { data, error } = await supabase.auth.admin.createUser({
-        email: formData.email,
-        password: formData.tempPassword,
-        user_metadata: {
-          name: formData.name,
-          department: formData.department,
-          role: formData.role,
-        }
+      // Call the edge function to create the user with admin privileges
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
       });
 
-      if (error) throw error;
-
-      // Create or update the profile with the correct data
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            user_id: data.user.id,
-            name: formData.name,
-            email: formData.email,
-            department: formData.department,
-            role: formData.role,
-            is_active: true,
-          });
-
-        if (profileError) throw profileError;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error('Failed to create user');
       }
 
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create user');
+      }
+
+      console.log('User successfully created:', data.user);
       await fetchAllUsers();
       return data.user;
     } catch (error) {
-      // Store current session to restore later
-      const currentSession = session;
-      
-      console.warn('Admin user creation failed, falling back to regular signup:', error);
-      
-      const { data, error: signupError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.tempPassword,
-        options: {
-          data: {
-            name: formData.name,
-            department: formData.department,
-            role: formData.role,
-          }
-        }
-      });
-
-      if (signupError) throw signupError;
-
-      // Update profile with correct data
-      if (data.user) {
-        await supabase
-          .from('profiles')
-          .update({
-            name: formData.name,
-            department: formData.department,
-            role: formData.role,
-            is_active: true,
-          })
-          .eq('user_id', data.user.id);
-      }
-
-      // Restore the original admin session
-      if (currentSession) {
-        await supabase.auth.setSession(currentSession);
-      }
-
-      await fetchAllUsers();
-      return data.user;
+      console.error('Error creating user:', error);
+      throw error;
     }
   };
 
@@ -263,20 +212,27 @@ export const useAuth = () => {
 
   const deleteUser = async (userId: string) => {
     try {
-      // Try to delete the user from auth (requires admin privileges)
-      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
-      if (authError) {
-        console.warn('Could not delete auth user, marking as inactive:', authError);
-        // Fallback to marking as inactive
-        const { error } = await supabase.from('profiles').update({ is_active: false }).eq('user_id', userId);
-        if (error) throw error;
-      } else {
-        // If auth user was deleted, the profile will be cascade deleted by the foreign key
+      // Call the edge function to delete the user with admin privileges
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId },
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error('Failed to delete user');
       }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to delete user');
+      }
+
+      console.log(`User ${data.action}:`, userId);
     } catch (error) {
-      // Fallback to marking as inactive
-      const { error: updateError } = await supabase.from('profiles').update({ is_active: false }).eq('user_id', userId);
-      if (updateError) throw updateError;
+      console.error('Error deleting user:', error);
+      throw error;
     }
     await fetchAllUsers();
   };
