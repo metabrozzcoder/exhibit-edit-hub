@@ -1,62 +1,20 @@
 import { useState, useEffect } from 'react';
-import { User, UserRole, Permission } from '@/types/artifact';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { UserRole, Permission } from '@/types/artifact';
 
-// Mock users database - replace with Firebase auth
-const mockUsers: User[] = [
-  {
-    id: '1',
-    email: 'admin',
-    name: 'Admin User',
-    role: 'admin',
-    department: 'Administration',
-    createdAt: '2024-01-01',
-    lastLogin: '2024-12-10',
-    isActive: true,
-  },
-  {
-    id: '2',
-    email: 'admin@museum.org',
-    name: 'Museum Admin',
-    role: 'admin',
-    department: 'Administration',
-    createdAt: '2024-01-01',
-    lastLogin: '2024-12-10',
-    isActive: true,
-  },
-  {
-    id: '3',
-    email: 'curator@museum.org',
-    name: 'Jane Smith',
-    role: 'curator',
-    department: 'Ancient Art',
-    createdAt: '2024-01-01',
-    lastLogin: '2024-12-10',
-    isActive: true,
-  },
-  {
-    id: '4',
-    email: 'researcher@museum.org',
-    name: 'John Doe',
-    role: 'researcher',
-    department: 'Modern Art',
-    createdAt: '2024-02-01',
-    lastLogin: '2024-12-09',
-    isActive: true,
-  },
-  {
-    id: '5',
-    email: 'viewer@museum.org',
-    name: 'Alice Johnson',
-    role: 'viewer',
-    department: 'Visitor Services',
-    createdAt: '2024-03-01',
-    lastLogin: '2024-12-08',
-    isActive: false,
-  },
-];
-
-// Mock current user
-const mockUser: User = mockUsers[0]; // Default to admin
+interface Profile {
+  id: string;
+  user_id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  department?: string;
+  created_at: string;
+  updated_at: string;
+  last_login?: string;
+  is_active: boolean;
+}
 
 const rolePermissions: Record<UserRole, Permission> = {
   admin: {
@@ -91,95 +49,64 @@ const rolePermissions: Record<UserRole, Permission> = {
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [users, setUsers] = useState<User[]>(mockUsers);
 
   useEffect(() => {
-    // Load users and current user on mount
-    const savedUsers = localStorage.getItem('allUsers');
-    const savedUser = localStorage.getItem('currentUser');
-    
-    if (savedUsers) {
-      try {
-        setUsers(JSON.parse(savedUsers));
-      } catch (error) {
-        console.error('Error loading users from localStorage:', error);
-        setUsers(mockUsers);
-        localStorage.setItem('allUsers', JSON.stringify(mockUsers));
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
+          setProfile(profileData);
+        } else {
+          setProfile(null);
+        }
+        
+        setIsLoading(false);
       }
-    } else {
-      setUsers(mockUsers);
-      localStorage.setItem('allUsers', JSON.stringify(mockUsers));
-    }
+    );
 
-    setTimeout(() => {
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
-      setIsLoading(false);
-    }, 1000);
-
-    // Listen for auth changes across the app (same-tab and cross-tab)
-    const handleAuthChanged = (_e?: Event) => {
-      const stored = localStorage.getItem('currentUser');
-      setUser(stored ? JSON.parse(stored) : null);
-    };
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'currentUser') handleAuthChanged();
-      if (e.key === 'allUsers') {
-        const storedUsers = e.newValue ? JSON.parse(e.newValue) : mockUsers;
-        setUsers(storedUsers);
-      }
-    };
-
-    document.addEventListener('auth:changed', handleAuthChanged as EventListener);
-    window.addEventListener('storage', handleStorage);
-
-    return () => {
-      document.removeEventListener('auth:changed', handleAuthChanged as EventListener);
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, []);
-
-  const permissions = user ? rolePermissions[user.role] : null;
-
-  const login = async (email: string, password: string) => {
-    return new Promise<void>((resolve, reject) => {
-      setIsLoading(true);
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       
-      // Simple admin credentials for testing
-      if ((email === 'admin' && password === 'admin') || 
-          (email === 'admin@museum.org' && password === 'admin')) {
-        setTimeout(() => {
-          const adminUser = users.find(u => u.email === email) || users[0];
-          const updatedUser = { ...adminUser, lastLogin: new Date().toISOString().split('T')[0] };
-          setUser(updatedUser);
-          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-          document.dispatchEvent(new Event('auth:changed'));
-          setIsLoading(false);
-          resolve();
-        }, 1000);
-        return;
-      }
-
-      // Simulate authentication for other users
-      const foundUser = users.find(u => u.email === email);
-      if (foundUser && foundUser.isActive) {
-        setTimeout(() => {
-          const updatedUser = { ...foundUser, lastLogin: new Date().toISOString().split('T')[0] };
-          setUser(updatedUser);
-          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-          document.dispatchEvent(new Event('auth:changed'));
-          setIsLoading(false);
-          resolve();
-        }, 1000);
+      if (session?.user) {
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single()
+          .then(({ data: profileData }) => {
+            setProfile(profileData);
+            setIsLoading(false);
+          });
       } else {
-        setTimeout(() => {
-          setIsLoading(false);
-          reject(new Error('Invalid credentials'));
-        }, 1000);
+        setIsLoading(false);
       }
     });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const permissions = profile ? rolePermissions[profile.role as UserRole] : rolePermissions.viewer;
+
+  const login = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
   };
 
   const register = async (formData: {
@@ -189,124 +116,36 @@ export const useAuth = () => {
     department: string;
     role: UserRole;
   }) => {
-    // Replace with Firebase auth
-    setIsLoading(true);
+    const redirectUrl = `${window.location.origin}/`;
     
-    // Check if user already exists
-    const existingUser = users.find(u => u.email === formData.email);
-    if (existingUser) {
-      setTimeout(() => {
-        setIsLoading(false);
-        throw new Error('User already exists');
-      }, 1000);
-      return;
-    }
-
-    // Create new user
-    const newUser: User = {
-      id: Date.now().toString(),
+    const { error } = await supabase.auth.signUp({
       email: formData.email,
-      name: formData.name,
-      role: formData.role,
-      department: formData.department,
-      createdAt: new Date().toISOString().split('T')[0],
-      lastLogin: new Date().toISOString().split('T')[0],
-      isActive: true,
-    };
-
-    setTimeout(() => {
-      setUsers(prev => [...prev, newUser]);
-      setUser(newUser);
-      localStorage.setItem('currentUser', JSON.stringify(newUser));
-      setIsLoading(false);
-    }, 1000);
+      password: formData.password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          name: formData.name,
+          department: formData.department,
+          role: formData.role,
+        }
+      }
+    });
+    return { error };
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('currentUser');
-    document.dispatchEvent(new Event('auth:changed'));
-  };
-
-  const getAllUsers = () => {
-    return users;
-  };
-
-  const createUser = async (formData: {
-    name: string;
-    email: string;
-    department: string;
-    role: UserRole;
-    tempPassword: string;
-  }) => {
-    // Replace with Firebase admin functions
-    const existingUser = users.find(u => u.email === formData.email);
-    if (existingUser) {
-      throw new Error('User already exists');
-    }
-
-    const newUser: User = {
-      id: Date.now().toString(),
-      email: formData.email,
-      name: formData.name,
-      role: formData.role,
-      department: formData.department,
-      createdAt: new Date().toISOString().split('T')[0],
-      lastLogin: 'Never',
-      isActive: true,
-    };
-
-    const updatedUsers = [...users, newUser];
-    setUsers(updatedUsers);
-    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
-  };
-
-  const updateUserRole = async (userId: string, newRole: UserRole) => {
-    const updatedUsers = users.map(u => 
-      u.id === userId ? { ...u, role: newRole } : u
-    );
-    setUsers(updatedUsers);
-    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
-  };
-
-  const toggleUserActive = async (userId: string) => {
-    const updatedUsers = users.map(u => 
-      u.id === userId ? { ...u, isActive: !u.isActive } : u
-    );
-    setUsers(updatedUsers);
-    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
-  };
-
-  const deleteUser = async (userId: string) => {
-    const updatedUsers = users.filter(u => u.id !== userId);
-    setUsers(updatedUsers);
-    localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
-    
-    // If the deleted user is the current user, log them out
-    if (user?.id === userId) {
-      logout();
-    }
-  };
-
-  const changePassword = async (currentPassword: string, newPassword: string) => {
-    // Replace with Firebase auth
-    // Simulate password validation and update
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   return {
     user,
-    permissions,
+    profile,
+    session,
     isLoading,
+    permissions,
+    isAuthenticated: !!user,
     login,
     register,
     logout,
-    getAllUsers,
-    createUser,
-    updateUserRole,
-    toggleUserActive,
-    deleteUser,
-    changePassword,
-    isAuthenticated: !!user,
   };
 };

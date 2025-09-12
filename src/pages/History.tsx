@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Calendar, User, Package, Filter, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,15 +6,52 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
-import { mockHistory, mockArtifacts } from '@/data/mockArtifacts';
+import { supabase } from '@/integrations/supabase/client';
+import { ArtifactHistory } from '@/types/artifact';
 
 const History = () => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
+  const [history, setHistory] = useState<ArtifactHistory[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAction, setSelectedAction] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const fetchHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('artifact_history')
+        .select(`
+          *,
+          artifacts:artifact_id (title, accession_number)
+        `)
+        .order('edited_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedHistory: ArtifactHistory[] = data.map(item => ({
+        id: item.id,
+        artifactId: item.artifact_id,
+        action: item.action as 'created' | 'updated' | 'deleted',
+        changes: item.changes || {},
+        editedBy: item.edited_by,
+        editedAt: item.edited_at,
+        notes: item.notes,
+      }));
+
+      setHistory(formattedHistory);
+    } catch (error) {
+      console.error('Error fetching history:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Only admins can view history
-  if (user?.role !== 'admin') {
+  if (profile?.role !== 'admin') {
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="w-full max-w-md">
@@ -29,12 +66,8 @@ const History = () => {
     );
   }
   
-  const filteredHistory = mockHistory.filter(entry => {
-    const artifact = mockArtifacts.find(a => a.id === entry.artifactId);
-    const artifactTitle = artifact?.title || '';
-    
-    const matchesSearch = artifactTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         entry.editedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredHistory = history.filter(entry => {
+    const matchesSearch = entry.editedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesAction = selectedAction === 'all' || entry.action === selectedAction;
@@ -97,7 +130,12 @@ const History = () => {
         </div>
       </div>
 
-      {filteredHistory.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-12">
+          <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Loading history...</h3>
+        </div>
+      ) : filteredHistory.length === 0 ? (
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No history found</h3>
@@ -113,8 +151,6 @@ const History = () => {
           {filteredHistory
             .sort((a, b) => new Date(b.editedAt).getTime() - new Date(a.editedAt).getTime())
             .map((entry) => {
-              const artifact = mockArtifacts.find(a => a.id === entry.artifactId);
-              
               return (
                 <Card key={entry.id}>
                   <CardHeader className="pb-3">
@@ -123,10 +159,10 @@ const History = () => {
                         <div className="text-2xl">{getActionIcon(entry.action)}</div>
                         <div>
                           <CardTitle className="text-lg">
-                            {artifact?.title || 'Unknown Artifact'}
+                            Artifact Change
                           </CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            {artifact?.accessionNumber}
+                            ID: {entry.artifactId}
                           </p>
                         </div>
                       </div>

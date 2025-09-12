@@ -1,108 +1,127 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Report, ReportType, ReportPriority, ReportStatus } from '@/types/report';
-import { Artifact } from '@/types/artifact';
-
-const mockReports: Report[] = [
-  {
-    id: '1',
-    artifactId: 'art-001',
-    artifactTitle: 'Ancient Greek Amphora',
-    reportType: 'Conservation',
-    title: 'Conservation Assessment - Crack Repair',
-    content: 'Detailed analysis of structural integrity and repair recommendations for the amphora crack discovered during routine inspection.',
-    findings: 'Small hairline crack detected on the neck area, approximately 2cm in length.',
-    recommendations: 'Immediate stabilization required. Professional conservation treatment recommended within 30 days.',
-    priority: 'High',
-    status: 'Completed',
-    createdBy: 'Dr. Sarah Johnson',
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-20T15:30:00Z',
-    reviewedBy: 'Prof. Michael Chen',
-    reviewedAt: '2024-01-20T15:30:00Z'
-  },
-  {
-    id: '2',
-    artifactId: 'art-002',
-    artifactTitle: 'Roman Bronze Coin',
-    reportType: 'Research',
-    title: 'Provenance Research Report',
-    content: 'Comprehensive research into the historical background and authenticity verification of the Roman bronze coin.',
-    findings: 'Coin dates to Emperor Trajan period (98-117 AD). Authentication confirmed through metallurgical analysis.',
-    recommendations: 'Suitable for exhibition. Recommend climate-controlled display case.',
-    priority: 'Medium',
-    status: 'Under Review',
-    createdBy: 'Dr. Emily Rodriguez',
-    createdAt: '2024-01-10T14:20:00Z',
-    updatedAt: '2024-01-12T09:15:00Z'
-  }
-];
 
 export const useReports = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load reports from localStorage or use mock data
-    const savedReports = localStorage.getItem('museum_reports');
-    if (savedReports) {
-      try {
-        setReports(JSON.parse(savedReports));
-      } catch (error) {
-        console.error('Error loading reports from localStorage:', error);
-        setReports(mockReports);
-        localStorage.setItem('museum_reports', JSON.stringify(mockReports));
-      }
-    } else {
-      setReports(mockReports);
-      localStorage.setItem('museum_reports', JSON.stringify(mockReports));
-    }
-    setIsLoading(false);
+    fetchReports();
   }, []);
 
-  const saveToStorage = (updatedReports: Report[]) => {
-    localStorage.setItem('museum_reports', JSON.stringify(updatedReports));
+  const fetchReports = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedReports: Report[] = data.map(item => ({
+        id: item.id,
+        artifactId: item.artifact_id,
+        artifactTitle: item.artifact_title,
+        reportType: item.report_type as ReportType,
+        title: item.title,
+        content: item.content,
+        findings: item.findings,
+        recommendations: item.recommendations,
+        priority: item.priority as ReportPriority,
+        status: item.status as ReportStatus,
+        attachments: item.attachments || [],
+        createdBy: item.created_by,
+        createdAt: item.created_at,
+        updatedAt: item.updated_at,
+        reviewedBy: item.reviewed_by,
+        reviewedAt: item.reviewed_at,
+      }));
+
+      setReports(formattedReports);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const createReport = (reportData: Partial<Report>) => {
-    const newReport: Report = {
-      id: `report-${Date.now()}`,
-      artifactId: reportData.artifactId || '',
-      artifactTitle: reportData.artifactTitle || '',
-      reportType: reportData.reportType || 'General',
-      title: reportData.title || '',
-      content: reportData.content || '',
-      findings: reportData.findings || '',
-      recommendations: reportData.recommendations || '',
-      priority: reportData.priority || 'Medium',
-      status: reportData.status || 'Draft',
-      attachments: reportData.attachments || [],
-      createdBy: reportData.createdBy || 'Current User',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      reviewedBy: reportData.reviewedBy,
-      reviewedAt: reportData.reviewedAt
-    };
+  const createReport = async (reportData: Partial<Report>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
 
-    const updatedReports = [...reports, newReport];
-    setReports(updatedReports);
-    saveToStorage(updatedReports);
-    return newReport;
+      const { data, error } = await supabase
+        .from('reports')
+        .insert({
+          artifact_id: reportData.artifactId!,
+          artifact_title: reportData.artifactTitle!,
+          report_type: reportData.reportType!,
+          title: reportData.title!,
+          content: reportData.content!,
+          findings: reportData.findings,
+          recommendations: reportData.recommendations,
+          priority: reportData.priority!,
+          status: reportData.status!,
+          attachments: reportData.attachments || [],
+          created_by: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      await fetchReports();
+      return data;
+    } catch (error) {
+      console.error('Error creating report:', error);
+      throw error;
+    }
   };
 
-  const updateReport = (reportId: string, updates: Partial<Report>) => {
-    const updatedReports = reports.map(report =>
-      report.id === reportId
-        ? { ...report, ...updates, updatedAt: new Date().toISOString() }
-        : report
-    );
-    setReports(updatedReports);
-    saveToStorage(updatedReports);
+  const updateReport = async (reportId: string, updates: Partial<Report>) => {
+    try {
+      const updateData: any = {};
+
+      // Map Report fields to database fields
+      if (updates.artifactId) updateData.artifact_id = updates.artifactId;
+      if (updates.artifactTitle) updateData.artifact_title = updates.artifactTitle;
+      if (updates.reportType) updateData.report_type = updates.reportType;
+      if (updates.title) updateData.title = updates.title;
+      if (updates.content) updateData.content = updates.content;
+      if (updates.findings !== undefined) updateData.findings = updates.findings;
+      if (updates.recommendations !== undefined) updateData.recommendations = updates.recommendations;
+      if (updates.priority) updateData.priority = updates.priority;
+      if (updates.status) updateData.status = updates.status;
+      if (updates.attachments) updateData.attachments = updates.attachments;
+      if (updates.reviewedBy !== undefined) updateData.reviewed_by = updates.reviewedBy;
+      if (updates.reviewedAt !== undefined) updateData.reviewed_at = updates.reviewedAt;
+
+      const { error } = await supabase
+        .from('reports')
+        .update(updateData)
+        .eq('id', reportId);
+
+      if (error) throw error;
+      await fetchReports();
+    } catch (error) {
+      console.error('Error updating report:', error);
+      throw error;
+    }
   };
 
-  const deleteReport = (reportId: string) => {
-    const updatedReports = reports.filter(report => report.id !== reportId);
-    setReports(updatedReports);
-    saveToStorage(updatedReports);
+  const deleteReport = async (reportId: string) => {
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .eq('id', reportId);
+
+      if (error) throw error;
+      await fetchReports();
+    } catch (error) {
+      console.error('Error deleting report:', error);
+      throw error;
+    }
   };
 
   const getReportsByArtifact = (artifactId: string) => {
@@ -144,6 +163,7 @@ export const useReports = () => {
     getReportsByType,
     getReportsByStatus,
     getReportsByPriority,
-    searchReports
+    searchReports,
+    refetch: fetchReports,
   };
 };
