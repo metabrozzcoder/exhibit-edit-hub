@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { User, UserRole } from '@/types/artifact';
-import { Eye, EyeOff, Plus, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
+import { Eye, EyeOff, Plus, Edit, Trash2, UserCheck, UserX, Copy } from 'lucide-react';
 
 const AdminProfile = () => {
   const { user, permissions, getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, changePassword } = useAuth();
@@ -30,6 +30,8 @@ const AdminProfile = () => {
     role: 'viewer' as UserRole,
     tempPassword: ''
   });
+
+  const [generatedPassword, setGeneratedPassword] = useState('');
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editRole, setEditRole] = useState<UserRole>('viewer');
@@ -106,6 +108,7 @@ const AdminProfile = () => {
     try {
       const tempPassword = generatePassword();
       await createUser({ ...newUserForm, tempPassword });
+      setGeneratedPassword(tempPassword);
       setNewUserForm({
         name: '',
         email: '',
@@ -115,7 +118,7 @@ const AdminProfile = () => {
       });
       toast({
         title: "User created successfully",
-        description: `Temporary password: ${tempPassword}`,
+        description: "User created with temporary password",
       });
     } catch (error) {
       toast({
@@ -323,6 +326,45 @@ const AdminProfile = () => {
                     Create User
                   </Button>
                 </form>
+                
+                {generatedPassword && (
+                  <div className="mt-6 p-4 bg-muted rounded-lg border">
+                    <h3 className="font-semibold text-sm mb-2 text-museum-gold">Generated Password</h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Save this password securely. The user will need it to log in.
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={generatedPassword}
+                        readOnly
+                        className="font-mono text-sm bg-background"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(generatedPassword);
+                          toast({
+                            title: "Copied!",
+                            description: "Password copied to clipboard",
+                          });
+                        }}
+                      >
+                        <Copy className="w-4 h-4 mr-1" />
+                        Copy
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setGeneratedPassword('')}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
