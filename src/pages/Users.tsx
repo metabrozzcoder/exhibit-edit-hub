@@ -88,9 +88,21 @@ const UsersPage = () => {
       });
       setIsCreateDialogOpen(false);
       
+      // Show detailed password info with copy functionality
       toast({
         title: "User created successfully",
-        description: `Temporary password: ${tempPassword}`,
+        description: (
+          <div className="space-y-2">
+            <p>Temporary password for {newUserForm.name}:</p>
+            <div className="bg-muted p-2 rounded font-mono text-sm">
+              {tempPassword}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Please share this password with the user securely. They should change it on first login.
+            </p>
+          </div>
+        ),
+        duration: 10000, // Show for 10 seconds
       });
     } catch (error) {
       toast({
