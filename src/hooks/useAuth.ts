@@ -175,17 +175,18 @@ export const useAuth = () => {
       setProfile(null);
       setSession(null);
       setAllUsers([]);
-      
-      // Attempt to sign out from Supabase
-      const { error } = await supabase.auth.signOut();
-      
-      // Don't throw on session_not_found errors as user is already logged out
-      if (error && error.message !== 'Session from session_id claim in JWT does not exist') {
-        console.warn('Logout error:', error);
+
+      // Prefer local sign-out to avoid 403 session_not_found noise
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      if (error) {
+        console.warn('Logout error (local):', error);
       }
+
+      // Hard reload to ensure all hooks re-initialize without session
+      window.location.assign('/');
     } catch (error) {
       console.warn('Logout error:', error);
-      // Even if logout fails, user state is cleared locally
+      window.location.assign('/');
     }
   };
 
