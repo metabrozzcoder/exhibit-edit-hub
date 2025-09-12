@@ -1,78 +1,64 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { FileText, Download, BarChart3, TrendingUp } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/hooks/useAuth';
+import CreateReportForm from '@/components/reports/CreateReportForm';
+import ReportsList from '@/components/reports/ReportsList';
+import { FileText, Plus, List } from 'lucide-react';
 
 const ReportsPage = () => {
-  const reports = [
-    {
-      title: 'Collection Summary',
-      description: 'Overview of all artifacts by category, condition, and location',
-      icon: BarChart3,
-      action: () => generateReport('collection-summary'),
-    },
-    {
-      title: 'Acquisition Report',
-      description: 'Details of recent acquisitions and their sources',
-      icon: TrendingUp,
-      action: () => generateReport('acquisitions'),
-    },
-    {
-      title: 'Conservation Status',
-      description: 'Artifacts requiring conservation work or attention',
-      icon: FileText,
-      action: () => generateReport('conservation'),
-    },
-    {
-      title: 'Exhibition History',
-      description: 'Track which artifacts have been displayed and when',
-      icon: Download,
-      action: () => generateReport('exhibitions'),
-    },
-  ];
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('list');
 
-  const generateReport = (type: string) => {
-    // Mock report generation
-    toast({
-      title: "Report generated",
-      description: `${type} report has been prepared and downloaded.`,
-    });
+  // Check if user has permission to view reports (not viewers)
+  if (user?.role === 'viewer') {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <FileText className="h-16 w-16 mx-auto text-muted-foreground" />
+          <h2 className="text-2xl font-semibold">Access Restricted</h2>
+          <p className="text-muted-foreground max-w-md">
+            You don't have permission to view or create reports. Contact your administrator for access.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleReportCreated = () => {
+    setActiveTab('list');
   };
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">Reports</h1>
-        <p className="text-muted-foreground">
-          Generate detailed reports about your collection
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Reports Management</h1>
+          <p className="text-muted-foreground">
+            Create and manage detailed reports for artifacts in your collection
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {reports.map((report) => {
-          const Icon = report.icon;
-          return (
-            <Card key={report.title} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Icon className="h-5 w-5 text-museum-gold" />
-                  {report.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">{report.description}</p>
-                <Button 
-                  onClick={report.action}
-                  className="w-full bg-museum-gold hover:bg-museum-gold/90"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Generate Report
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsTrigger value="list" className="flex items-center gap-2">
+            <List className="h-4 w-4" />
+            View Reports
+          </TabsTrigger>
+          <TabsTrigger value="create" className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Create Report
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="list" className="space-y-6">
+          <ReportsList />
+        </TabsContent>
+
+        <TabsContent value="create" className="space-y-6">
+          <CreateReportForm onReportCreated={handleReportCreated} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
