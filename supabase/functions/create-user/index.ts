@@ -119,31 +119,64 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Create or update the profile with the correct data
-    const { error: profileError } = await supabaseAdmin
+    // Check if profile already exists (due to trigger)
+    const { data: existingProfile } = await supabaseAdmin
       .from('profiles')
-      .upsert({
-        user_id: userData.user.id,
-        name,
-        email,
-        department,
-        role,
-        is_active: true,
-      })
+      .select('id')
+      .eq('user_id', userData.user.id)
+      .single()
 
-    if (profileError) {
-      console.error('Error creating profile:', profileError)
-      
-      // Clean up the auth user if profile creation failed
-      await supabaseAdmin.auth.admin.deleteUser(userData.user.id)
-      
-      return new Response(
-        JSON.stringify({ error: 'Failed to create user profile' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+    if (!existingProfile) {
+      // Create profile only if it doesn't exist
+      const { error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .insert({
+          user_id: userData.user.id,
+          name,
+          email,
+          department,
+          role,
+          is_active: true,
+        })
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError)
+        
+        // Clean up the auth user if profile creation failed
+        await supabaseAdmin.auth.admin.deleteUser(userData.user.id)
+        
+        return new Response(
+          JSON.stringify({ error: 'Failed to create user profile' }),
+          { 
+            status: 500, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
+    } else {
+      // Update existing profile with correct data
+      const { error: updateError } = await supabaseAdmin
+        .from('profiles')
+        .update({
+          name,
+          email,
+          department,
+          role,
+          is_active: true,
+        })
+        .eq('user_id', userData.user.id)
+
+      if (updateError) {
+        console.error('Error updating profile:', updateError)
+        
+        return new Response(
+          JSON.stringify({ error: 'Failed to update user profile' }),
+          { 
+            status: 500, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
     }
 
     console.log('User successfully created:', userData.user.id)
