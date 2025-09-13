@@ -121,20 +121,22 @@ const History = () => {
     );
   }
   
-  const getUserName = (userId: string) => {
+  const getUserName = (userId: string | null | undefined) => {
+    if (!userId) return 'System';
     const user = allUsers.find(u => u.user_id === userId);
-    return user ? user.name : userId;
+    return user?.name || 'System';
   };
 
-  const filteredHistory = history.filter(entry => {
+  const filteredHistory = history.filter((entry) => {
     const userName = getUserName(entry.editedBy);
-    const matchesSearch = userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         entry.editedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                         (entry.artifactTitle && entry.artifactTitle.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+    const term = searchTerm.toLowerCase();
+    const matchesSearch = (userName || '').toLowerCase().includes(term) ||
+      ((entry.editedBy || '').toLowerCase().includes(term)) ||
+      ((entry.notes || '').toLowerCase().includes(term)) ||
+      ((entry.artifactTitle || '').toLowerCase().includes(term));
+
     const matchesAction = selectedAction === 'all' || entry.action === selectedAction;
-    
+
     return matchesSearch && matchesAction;
   });
 
