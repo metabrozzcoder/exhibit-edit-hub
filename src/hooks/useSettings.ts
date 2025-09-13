@@ -12,6 +12,7 @@ export interface UserSettings {
   sessionTimeout: boolean;
   auditLogging: boolean;
   themePreference: string;
+  languagePreference: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -50,6 +51,7 @@ export const useSettings = () => {
           sessionTimeout: data.session_timeout,
           auditLogging: data.audit_logging,
           themePreference: data.theme_preference,
+          languagePreference: data.language_preference,
           createdAt: data.created_at,
           updatedAt: data.updated_at,
         };
@@ -65,6 +67,7 @@ export const useSettings = () => {
           sessionTimeout: true,
           auditLogging: true,
           themePreference: 'museum',
+          languagePreference: 'en',
         };
         setSettings(defaultSettings);
       }
@@ -88,6 +91,7 @@ export const useSettings = () => {
         session_timeout: updatedSettings.sessionTimeout ?? settings.sessionTimeout,
         audit_logging: updatedSettings.auditLogging ?? settings.auditLogging,
         theme_preference: updatedSettings.themePreference ?? settings.themePreference,
+        language_preference: updatedSettings.languagePreference ?? settings.languagePreference,
       };
 
       if (settings.id) {
@@ -118,6 +122,7 @@ export const useSettings = () => {
           sessionTimeout: data.session_timeout,
           auditLogging: data.audit_logging,
           themePreference: data.theme_preference,
+          languagePreference: data.language_preference,
           createdAt: data.created_at,
           updatedAt: data.updated_at,
         };

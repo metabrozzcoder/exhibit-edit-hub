@@ -3,14 +3,19 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Settings, Bell, Database, Lock, Download, Palette } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Settings, Bell, Database, Lock, Download, Palette, Globe } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useSettings } from '@/hooks/useSettings';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const SettingsPage = () => {
   const { user } = useAuth();
   const { settings, isLoading, saveSettings } = useSettings();
+  const { t } = useTranslation();
+  const { changeLanguage, currentLanguage } = useLanguage();
 
   const handleSettingChange = async (key: string, value: boolean) => {
     if (!settings) return;
@@ -25,6 +30,23 @@ const SettingsPage = () => {
       toast({
         title: "Error",
         description: "Failed to save setting. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLanguageChange = async (language: string) => {
+    try {
+      await changeLanguage(language);
+      await saveSettings({ languagePreference: language });
+      toast({
+        title: "Language updated",
+        description: "Your language preference has been saved.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save language preference. Please try again.",
         variant: "destructive",
       });
     }
@@ -125,6 +147,33 @@ const SettingsPage = () => {
                   checked={settings?.advancedFeatures ?? false}
                   onCheckedChange={(checked) => handleSettingChange('advancedFeatures', checked)}
                 />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    {t('language')}
+                  </Label>
+                  <div className="text-sm text-muted-foreground">
+                    Choose your preferred language
+                  </div>
+                </div>
+                <Select 
+                  value={currentLanguage} 
+                  onValueChange={handleLanguageChange}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">🇺🇸 {t('english')}</SelectItem>
+                    <SelectItem value="ru">🇷🇺 {t('russian')}</SelectItem>
+                    <SelectItem value="uz">🇺🇿 {t('uzbek')}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>

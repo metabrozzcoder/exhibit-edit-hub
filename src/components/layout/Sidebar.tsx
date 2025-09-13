@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useTranslation } from 'react-i18next';
 import { 
   Package, 
   Plus, 
@@ -27,52 +28,53 @@ const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const { user, permissions, logout } = useAuth();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const navigation = [
     {
-      name: 'Dashboard',
+      name: t('dashboard'),
       href: '/',
       icon: BarChart3,
       show: true,
     },
     {
-      name: 'Artifacts',
+      name: t('artifacts'),
       href: '/artifacts',
       icon: Package,
       show: true,
     },
     {
-      name: 'Search',
+      name: t('search'),
       href: '/search',
       icon: Search,
       show: true,
     },
     {
-      name: 'History',
+      name: t('history'),
       href: '/history',
       icon: History,
       show: user?.role === 'admin',
     },
     {
-      name: 'Reports',
+      name: t('reports'),
       href: '/reports',
       icon: FileText,
       show: permissions?.canExport,
     },
     {
-      name: 'Users',
+      name: t('users'),
       href: '/users',
       icon: Users,
       show: user?.role === 'admin',
     },
     {
-      name: 'Admin Profile',
+      name: t('auth:adminPanel'),
       href: '/admin',
       icon: Settings,
       show: user?.role === 'admin',
     },
     {
-      name: 'Settings',
+      name: t('settings'),
       href: '/settings',
       icon: Settings,
       show: true,
@@ -145,7 +147,7 @@ const Sidebar = ({ className }: SidebarProps) => {
           )}
         >
           <LogOut className={cn("h-4 w-4", collapsed ? "" : "mr-2")} />
-          {!collapsed && "Logout"}
+          {!collapsed && t('auth:logout')}
         </Button>
       </div>
     </div>

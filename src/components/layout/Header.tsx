@@ -6,10 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '@/components/ui/language-switcher';
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
@@ -17,13 +20,14 @@ const Header = () => {
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input 
-            placeholder="Search artifacts..." 
+            placeholder={t('artifacts:search')} 
             className="pl-10"
           />
         </div>
       </div>
       
       <div className="flex items-center gap-4">
+        <LanguageSwitcher />
         <NotificationCenter />
         
         <div className="flex items-center gap-2">
@@ -38,22 +42,22 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('auth:profile')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate('/profile')}>
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Profile Settings</span>
+                <span>{t('auth:profile')}</span>
               </DropdownMenuItem>
               {user?.role === 'admin' && (
                 <DropdownMenuItem onClick={() => navigate('/admin')}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Admin Panel</span>
+                  <span>{t('auth:adminPanel')}</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => { logout(); navigate('/'); }}>
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                <span>{t('auth:logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

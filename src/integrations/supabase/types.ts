@@ -246,6 +246,7 @@ export type Database = {
           created_at: string
           email_notifications: boolean
           id: string
+          language_preference: string
           session_timeout: boolean
           theme_preference: string | null
           two_factor_enabled: boolean
@@ -259,6 +260,7 @@ export type Database = {
           created_at?: string
           email_notifications?: boolean
           id?: string
+          language_preference?: string
           session_timeout?: boolean
           theme_preference?: string | null
           two_factor_enabled?: boolean
@@ -272,6 +274,7 @@ export type Database = {
           created_at?: string
           email_notifications?: boolean
           id?: string
+          language_preference?: string
           session_timeout?: boolean
           theme_preference?: string | null
           two_factor_enabled?: boolean
