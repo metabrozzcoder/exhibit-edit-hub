@@ -20,7 +20,7 @@ export type Database = {
           artifact_id: string
           changes: Json
           edited_at: string
-          edited_by: string
+          edited_by: string | null
           id: string
           notes: string | null
         }
@@ -29,7 +29,7 @@ export type Database = {
           artifact_id: string
           changes?: Json
           edited_at?: string
-          edited_by: string
+          edited_by?: string | null
           id?: string
           notes?: string | null
         }
@@ -38,7 +38,7 @@ export type Database = {
           artifact_id?: string
           changes?: Json
           edited_at?: string
-          edited_by?: string
+          edited_by?: string | null
           id?: string
           notes?: string | null
         }
@@ -53,7 +53,7 @@ export type Database = {
           condition: string
           conservation_notes: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           culture: string
           depth: number | null
           description: string
@@ -62,7 +62,7 @@ export type Database = {
           height: number | null
           id: string
           image_url: string | null
-          last_edited_by: string
+          last_edited_by: string | null
           location: string
           material: string
           period: string
@@ -82,7 +82,7 @@ export type Database = {
           condition: string
           conservation_notes?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           culture: string
           depth?: number | null
           description: string
@@ -91,7 +91,7 @@ export type Database = {
           height?: number | null
           id?: string
           image_url?: string | null
-          last_edited_by: string
+          last_edited_by?: string | null
           location: string
           material: string
           period: string
@@ -111,7 +111,7 @@ export type Database = {
           condition?: string
           conservation_notes?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           culture?: string
           depth?: number | null
           description?: string
@@ -120,7 +120,7 @@ export type Database = {
           height?: number | null
           id?: string
           image_url?: string | null
-          last_edited_by?: string
+          last_edited_by?: string | null
           location?: string
           material?: string
           period?: string
@@ -180,7 +180,7 @@ export type Database = {
           attachments: string[] | null
           content: string
           created_at: string
-          created_by: string
+          created_by: string | null
           findings: string | null
           id: string
           priority: string
@@ -198,7 +198,7 @@ export type Database = {
           attachments?: string[] | null
           content: string
           created_at?: string
-          created_by: string
+          created_by?: string | null
           findings?: string | null
           id?: string
           priority: string
@@ -216,7 +216,7 @@ export type Database = {
           attachments?: string[] | null
           content?: string
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           findings?: string | null
           id?: string
           priority?: string
