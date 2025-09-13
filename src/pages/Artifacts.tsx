@@ -12,10 +12,12 @@ import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Artifact } from '@/types/artifact';
+import { useTranslation } from 'react-i18next';
 
 const Artifacts = () => {
   const { permissions } = useAuth();
   const { notifyArtifactAdded, notifyArtifactUpdated, notifyArtifactDeleted } = useNotifications();
+  const { t } = useTranslation(['artifacts', 'common']);
   const { 
     artifacts, 
     filterArtifacts, 
@@ -133,9 +135,9 @@ const Artifacts = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-museum-bronze">Artifacts</h1>
+          <h1 className="text-3xl font-bold text-museum-bronze">{t('artifacts:title')}</h1>
           <p className="text-muted-foreground">
-            Manage your museum collection ({filteredArtifacts.length} of {artifacts.length} shown)
+            {t('artifacts:manageCollection', { shown: filteredArtifacts.length, total: artifacts.length })}
           </p>
         </div>
         
@@ -143,7 +145,7 @@ const Artifacts = () => {
           {permissions?.canExport && (
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
-              Export
+              {t('common:export')}
             </Button>
           )}
           {permissions?.canCreate && (
@@ -152,7 +154,7 @@ const Artifacts = () => {
               onClick={handleAdd}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Artifact
+              {t('artifacts:addArtifact')}
             </Button>
           )}
         </div>

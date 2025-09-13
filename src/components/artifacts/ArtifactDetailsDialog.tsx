@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar, MapPin, Tag, Package } from 'lucide-react';
 import { Artifact } from '@/types/artifact';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 interface ArtifactDetailsDialogProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface ArtifactDetailsDialogProps {
 
 const ArtifactDetailsDialog = ({ open, artifact, onClose, onEdit }: ArtifactDetailsDialogProps) => {
   const { permissions } = useAuth();
+  const { t } = useTranslation(['artifacts', 'common']);
 
   if (!artifact) return null;
 
@@ -30,14 +32,14 @@ const ArtifactDetailsDialog = ({ open, artifact, onClose, onEdit }: ArtifactDeta
               <Badge variant="outline" className="text-xs">
                 {artifact.accessionNumber}
               </Badge>
-              <Badge>{artifact.condition}</Badge>
+              <Badge>{t(`artifacts:${artifact.condition.toLowerCase()}`)}</Badge>
               {artifact.location === 'vitrine' && (
-                <Badge className="bg-museum-gold text-museum-gold-foreground">In Vitrine</Badge>
+                <Badge className="bg-museum-gold text-museum-gold-foreground">{t('artifacts:inVitrine')}</Badge>
               )}
             </div>
           </DialogTitle>
           <DialogDescription>
-            Quick view of artifact details
+            {t('artifacts:quickViewDetails')}
           </DialogDescription>
         </DialogHeader>
 
@@ -105,13 +107,13 @@ const ArtifactDetailsDialog = ({ open, artifact, onClose, onEdit }: ArtifactDeta
 
             <div className="space-y-2 text-sm">
               <div className="grid grid-cols-2 gap-2">
-                <span className="text-muted-foreground">Category</span>
+                <span className="text-muted-foreground">{t('artifacts:category')}</span>
                 <span>{artifact.category}</span>
-                <span className="text-muted-foreground">Culture</span>
+                <span className="text-muted-foreground">{t('artifacts:culture')}</span>
                 <span>{artifact.culture}</span>
-                <span className="text-muted-foreground">Material</span>
+                <span className="text-muted-foreground">{t('artifacts:material')}</span>
                 <span>{artifact.material}</span>
-                <span className="text-muted-foreground">Dimensions</span>
+                <span className="text-muted-foreground">{t('artifacts:dimensions')}</span>
                 <span>
                   H {dimensions.height} × W {dimensions.width} × D {dimensions.depth}
                   {dimensions.weight ? ` • ${dimensions.weight} kg` : ''}
@@ -145,9 +147,9 @@ const ArtifactDetailsDialog = ({ open, artifact, onClose, onEdit }: ArtifactDeta
           <span className="text-xs text-muted-foreground">Last updated {new Date(artifact.updatedAt).toLocaleString()}</span>
           <div className="flex gap-2">
             {permissions?.canEdit && onEdit && (
-              <Button variant="secondary" onClick={() => onEdit(artifact)}>Edit</Button>
+              <Button variant="secondary" onClick={() => onEdit(artifact)}>{t('common:edit')}</Button>
             )}
-            <Button variant="outline" onClick={onClose}>Close</Button>
+            <Button variant="outline" onClick={onClose}>{t('common:close')}</Button>
           </div>
         </DialogFooter>
       </DialogContent>

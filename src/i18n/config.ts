@@ -42,7 +42,10 @@ const resources = {
       language: "Language",
       english: "English",
       russian: "Russian", 
-      uzbek: "Uzbek"
+      uzbek: "Uzbek",
+      
+      // Additional common terms
+      basicInformation: "Basic Information"
     },
     artifacts: {
       title: "Artifacts",
@@ -107,7 +110,19 @@ const resources = {
       // Messages
       artifactAdded: "Artifact added successfully",
       artifactUpdated: "Artifact updated successfully",
-      artifactDeleted: "Artifact deleted successfully"
+      artifactDeleted: "Artifact deleted successfully",
+      
+      // Additional fields
+      basicInformation: "Basic Information",
+      inVitrine: "In Vitrine",
+      manageCollection: "Manage your museum collection ({{shown}} of {{total}} shown)",
+      searchArtifacts: "Search artifacts...",
+      allCategories: "All Categories",
+      allConditions: "All Conditions",
+      noArtifactsFound: "No artifacts found",
+      tryAdjustingCriteria: "Try adjusting your search criteria",
+      getStartedFirstArtifact: "Get started by adding your first artifact",
+      quickViewDetails: "Quick view of artifact details"
     },
     auth: {
       login: "Login",
@@ -116,13 +131,31 @@ const resources = {
       password: "Password",
       signIn: "Sign In",
       profile: "Profile",
-      adminPanel: "Admin Panel"
+      adminPanel: "Admin Panel",
+      signInAccount: "Sign in to your ARIMUS account",
+      signingIn: "Signing in..."
     },
     dashboard: {
       welcome: "Welcome to ARIMUS",
       totalArtifacts: "Total Artifacts",
       recentActivity: "Recent Activity",
-      quickActions: "Quick Actions"
+      quickActions: "Quick Actions",
+      museumCollectionOverview: "Museum Collection Overview",
+      inCollection: "In collection",
+      inVitrine: "In Vitrine",
+      currentlyExhibited: "Currently exhibited",
+      activeUsers: "Active Users",
+      ofTotalUsers: "of {{total}} total users",
+      needAttention: "Need Attention",
+      conditionIssues: "Condition issues",
+      locationDistribution: "Location Distribution",
+      recentAdditions: "Recent Additions",
+      needsAttention: "Needs Attention",
+      mostValuable: "Most Valuable",
+      totalCollectionValue: "Total Collection Value",
+      viewAll: "View All",
+      noRecentAdditions: "No recent additions",
+      allArtifactsGoodCondition: "All artifacts in good condition"
     }
   },
   ru: {
@@ -237,13 +270,31 @@ const resources = {
       password: "Пароль",
       signIn: "Войти",
       profile: "Профиль",
-      adminPanel: "Панель администратора"
+      adminPanel: "Панель администратора",
+      signInAccount: "Войдите в свою учетную запись ARIMUS",
+      signingIn: "Вход в систему..."
     },
     dashboard: {
       welcome: "Добро пожаловать в ARIMUS",
       totalArtifacts: "Всего артефактов",
       recentActivity: "Недавняя активность",
-      quickActions: "Быстрые действия"
+      quickActions: "Быстрые действия",
+      museumCollectionOverview: "Обзор музейной коллекции",
+      inCollection: "В коллекции",
+      inVitrine: "В витрине",
+      currentlyExhibited: "В настоящее время выставлено",
+      activeUsers: "Активные пользователи",
+      ofTotalUsers: "из {{total}} всего пользователей",
+      needAttention: "Требует внимания",
+      conditionIssues: "Проблемы с состоянием",
+      locationDistribution: "Распределение по местоположению",
+      recentAdditions: "Недавние поступления",
+      needsAttention: "Требует внимания",
+      mostValuable: "Самые ценные",
+      totalCollectionValue: "Общая стоимость коллекции",
+      viewAll: "Посмотреть все",
+      noRecentAdditions: "Нет недавних поступлений",
+      allArtifactsGoodCondition: "Все артефакты в хорошем состоянии"
     }
   },
   uz: {
@@ -358,13 +409,31 @@ const resources = {
       password: "Parol",
       signIn: "Tizimga kirish",
       profile: "Profil",
-      adminPanel: "Administrator paneli"
+      adminPanel: "Administrator paneli",
+      signInAccount: "ARIMUS hisobingizga kiring",
+      signingIn: "Tizimga kirish..."
     },
     dashboard: {
       welcome: "ARIMUS ga xush kelibsiz",
       totalArtifacts: "Jami artifaktlar",
       recentActivity: "So'nggi faollik",
-      quickActions: "Tezkor harakatlar"
+      quickActions: "Tezkor harakatlar",
+      museumCollectionOverview: "Muzey kolleksiyasi ko'rinishi",
+      inCollection: "Kolleksiyada",
+      inVitrine: "Vitrinada",
+      currentlyExhibited: "Hozir ko'rgazmada",
+      activeUsers: "Faol foydalanuvchilar",
+      ofTotalUsers: "{{total}} jami foydalanuvchilardan",
+      needAttention: "E'tibor talab qiladi",
+      conditionIssues: "Holat muammolari",
+      locationDistribution: "Joylashuv bo'yicha taqsimot",
+      recentAdditions: "So'nggi qo'shilganlar",
+      needsAttention: "E'tibor talab qiladi",
+      mostValuable: "Eng qimmatlilar",
+      totalCollectionValue: "Kolleksiyaning umumiy qiymati",
+      viewAll: "Barchasini ko'rish",
+      noRecentAdditions: "So'nggi qo'shilganlar yo'q",
+      allArtifactsGoodCondition: "Barcha artifaktlar yaxshi holatda"
     }
   }
 };

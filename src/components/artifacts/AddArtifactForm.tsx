@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { X, Upload, Save } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -49,6 +50,7 @@ interface AddArtifactFormProps {
 }
 
 const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactFormProps) => {
+  const { t } = useTranslation('artifacts');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(initialData?.imageUrl || '');
   const [vitrineImageFile, setVitrineImageFile] = useState<File | null>(null);
@@ -171,7 +173,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-2xl">
-            {mode === 'create' ? 'Add New Artifact' : 'Edit Artifact'}
+            {mode === 'create' ? t('addArtifact') : t('common:edit')}
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -184,14 +186,14 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Basic Information</h3>
+                  <h3 className="text-lg font-medium">{t('common:basicInformation')}</h3>
                   
                   <FormField
                     control={form.control}
                     name="accessionNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Accession Number</FormLabel>
+                        <FormLabel>{t('accessionNumber')}</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., ANC.2024.001" {...field} />
                         </FormControl>
@@ -205,7 +207,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Title</FormLabel>
+                        <FormLabel>{t('artifactTitle')}</FormLabel>
                         <FormControl>
                           <Input placeholder="Artifact title" {...field} />
                         </FormControl>
@@ -219,7 +221,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>{t('description')}</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Detailed description of the artifact" 
@@ -238,7 +240,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Category</FormLabel>
+                          <FormLabel>{t('category')}</FormLabel>
                           <Select onValueChange={(value) => {
                             field.onChange(value);
                             setShowCustomCategory(value === 'Custom');
@@ -251,7 +253,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                             <SelectContent>
                               {categories.map((category) => (
                                 <SelectItem key={category} value={category}>
-                                  {category}
+                                  {t(category.toLowerCase().replace(/\s+/g, ''))}
                                 </SelectItem>
                               ))}
                             </SelectContent>

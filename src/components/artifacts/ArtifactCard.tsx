@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Artifact } from '@/types/artifact';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 interface ArtifactCardProps {
   artifact: Artifact;
@@ -14,6 +15,7 @@ interface ArtifactCardProps {
 
 const ArtifactCard = ({ artifact, onEdit, onDelete, onView }: ArtifactCardProps) => {
   const { permissions } = useAuth();
+  const { t } = useTranslation(['artifacts', 'common']);
 
   const getConditionColor = (condition: string) => {
     switch (condition) {
@@ -43,13 +45,13 @@ const ArtifactCard = ({ artifact, onEdit, onDelete, onView }: ArtifactCardProps)
           )}
           <div className="absolute top-2 right-2">
             <Badge className={getConditionColor(artifact.condition)}>
-              {artifact.condition}
+              {t(`artifacts:${artifact.condition.toLowerCase()}`)}
             </Badge>
           </div>
           {artifact.location === 'vitrine' && (
             <div className="absolute top-2 left-2">
               <Badge className="bg-museum-gold text-museum-gold-foreground">
-                In Vitrine
+                {t('artifacts:inVitrine')}
               </Badge>
             </div>
           )}
@@ -103,7 +105,7 @@ const ArtifactCard = ({ artifact, onEdit, onDelete, onView }: ArtifactCardProps)
           onClick={() => onView?.(artifact)}
         >
           <Eye className="h-3 w-3 mr-1" />
-          View
+          {t('common:view')}
         </Button>
         
         <div className="flex gap-2">

@@ -5,11 +5,13 @@ import { Package, Eye, Users, TrendingUp, AlertTriangle, Calendar, MapPin, Wareh
 import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Dashboard = () => {
   const { artifacts } = useArtifacts();
   const { getAllUsers, user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation(['dashboard', 'common']);
   
   const totalArtifacts = artifacts.length;
   const inVitrineCount = artifacts.filter(a => a.location === 'vitrine').length;
@@ -47,34 +49,34 @@ const Dashboard = () => {
 
   const stats = [
     {
-      title: 'Total Artifacts',
+      title: t('dashboard:totalArtifacts'),
       value: totalArtifacts,
       icon: Package,
-      description: 'In collection',
+      description: t('dashboard:inCollection'),
       color: 'text-museum-bronze',
       onClick: () => navigate('/artifacts')
     },
     {
-      title: 'In Vitrine',
+      title: t('dashboard:inVitrine'),
       value: inVitrineCount,
       icon: Eye,
-      description: 'Currently exhibited',
+      description: t('dashboard:currentlyExhibited'),
       color: 'text-heritage-blue',
       onClick: () => navigate('/search?location=vitrine')
     },
     {
-      title: 'Active Users',
+      title: t('dashboard:activeUsers'),
       value: activeUsers,
       icon: Users,
-      description: `of ${allUsers.length} total users`,
+      description: t('dashboard:ofTotalUsers', { total: allUsers.length }),
       color: 'text-museum-gold',
       onClick: () => navigate('/users')
     },
     {
-      title: 'Need Attention',
+      title: t('dashboard:needAttention'),
       value: needsAttentionCount,
       icon: AlertTriangle,
-      description: 'Condition issues',
+      description: t('dashboard:conditionIssues'),
       color: 'text-destructive',
       onClick: () => navigate('/search?condition=fair')
     }
@@ -98,8 +100,8 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">Dashboard</h1>
-        <p className="text-muted-foreground">Museum Collection Overview</p>
+        <h1 className="text-3xl font-bold text-museum-bronze">{t('common:dashboard')}</h1>
+        <p className="text-muted-foreground">{t('dashboard:museumCollectionOverview')}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

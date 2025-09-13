@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function AuthPage() {
   const { login, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const { t } = useTranslation('auth');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,15 +40,15 @@ export default function AuthPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Login</CardTitle>
+            <CardTitle>{t('login')}</CardTitle>
             <CardDescription>
-              Sign in to your ARIMUS account
+              {t('signInAccount')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="login-email">Email</Label>
+                <Label htmlFor="login-email">{t('email')}</Label>
                 <Input
                   id="login-email"
                   type="email"
@@ -57,7 +59,7 @@ export default function AuthPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
+                <Label htmlFor="login-password">{t('password')}</Label>
                 <div className="relative">
                   <Input
                     id="login-password"
@@ -79,7 +81,7 @@ export default function AuthPage() {
                 </div>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? t('signingIn') : t('signIn')}
               </Button>
             </form>
           </CardContent>
