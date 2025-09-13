@@ -18,18 +18,21 @@ const artifactSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   category: z.string().min(1, 'Category is required'),
+  customCategory: z.string().optional(),
   period: z.string().min(1, 'Period is required'),
   culture: z.string().min(1, 'Culture is required'),
   material: z.string().min(1, 'Material is required'),
   height: z.coerce.number().positive('Height must be positive'),
   width: z.coerce.number().positive('Width must be positive'),
-  depth: z.coerce.number().positive('Depth must be positive'),
+  depth: z.coerce.number().positive().optional(),
   weight: z.coerce.number().positive().optional(),
   condition: z.enum(['Excellent', 'Good', 'Fair', 'Poor', 'Damaged']),
   location: z.enum(['warehouse', 'vitrine']),
+  locationCustomName: z.string().optional(),
   provenance: z.string().min(1, 'Provenance is required'),
   acquisitionDate: z.string().min(1, 'Acquisition date is required'),
   acquisitionMethod: z.enum(['Purchase', 'Donation', 'Loan', 'Bequest', 'Transfer']),
+  donorName: z.string().optional(),
   estimatedValue: z.coerce.number().positive().optional(),
   conservationNotes: z.string(),
   tags: z.string(),
@@ -50,6 +53,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
   const [imagePreview, setImagePreview] = useState<string>(initialData?.imageUrl || '');
   const [vitrineImageFile, setVitrineImageFile] = useState<File | null>(null);
   const [vitrineImagePreview, setVitrineImagePreview] = useState<string>(initialData?.vitrineImageUrl || '');
+  const [showCustomCategory, setShowCustomCategory] = useState<boolean>(false);
 
   const form = useForm<ArtifactFormData>({
     resolver: zodResolver(artifactSchema),
@@ -58,18 +62,21 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       title: initialData?.title || '',
       description: initialData?.description || '',
       category: initialData?.category || '',
+      customCategory: '',
       period: initialData?.period || '',
       culture: initialData?.culture || '',
       material: initialData?.material || '',
       height: initialData?.dimensions?.height || 0,
       width: initialData?.dimensions?.width || 0,
-      depth: initialData?.dimensions?.depth || 0,
+      depth: initialData?.dimensions?.depth || undefined,
       weight: initialData?.dimensions?.weight || undefined,
       condition: initialData?.condition || 'Good',
       location: initialData?.location || 'warehouse',
+      locationCustomName: '',
       provenance: initialData?.provenance || '',
       acquisitionDate: initialData?.acquisitionDate?.split('T')[0] || '',
       acquisitionMethod: initialData?.acquisitionMethod || 'Purchase',
+      donorName: '',
       estimatedValue: initialData?.estimatedValue || undefined,
       conservationNotes: initialData?.conservationNotes || '',
       tags: initialData?.tags?.join(', ') || '',
@@ -98,19 +105,20 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
   };
 
   const onSubmit = (data: ArtifactFormData) => {
+    const finalCategory = data.category === 'Custom' ? data.customCategory : data.category;
     const artifact: Partial<Artifact> = {
       ...initialData,
       accessionNumber: data.accessionNumber,
       title: data.title,
       description: data.description,
-      category: data.category,
+      category: finalCategory || data.category,
       period: data.period,
       culture: data.culture,
       material: data.material,
       dimensions: {
         height: data.height,
         width: data.width,
-        depth: data.depth,
+        depth: data.depth || 0,
         weight: data.weight,
       },
       condition: data.condition,
@@ -126,6 +134,16 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       updatedAt: new Date().toISOString(),
     };
 
+    // Add donor information for donations
+    if (data.acquisitionMethod === 'Donation' && data.donorName) {
+      artifact.provenance = `${artifact.provenance} - Donated by: ${data.donorName}`;
+    }
+
+    // Add location custom name
+    if (data.locationCustomName) {
+      artifact.conservationNotes = `${artifact.conservationNotes}\nLocation: ${data.locationCustomName}`.trim();
+    }
+
     if (mode === 'create') {
       artifact.id = Date.now().toString();
       artifact.createdAt = new Date().toISOString();
@@ -139,12 +157,14 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
     onSave(artifact);
   };
 
-  const categories = ['Ceramics', 'Stone Objects', 'Glass', 'Metalwork', 'Textiles', 'Paintings', 'Sculptures'];
+  const categories = ['Ceramics', 'Stone Objects', 'Glass', 'Metalwork', 'Textiles', 'Paintings', 'Sculptures', 'Custom'];
   const conditions = ['Excellent', 'Good', 'Fair', 'Poor', 'Damaged'];
   const acquisitionMethods = ['Purchase', 'Donation', 'Loan', 'Bequest', 'Transfer'];
   const locations = ['warehouse', 'vitrine'];
 
   const selectedLocation = form.watch('location');
+  const selectedCategory = form.watch('category');
+  const selectedAcquisitionMethod = form.watch('acquisitionMethod');
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -219,7 +239,10 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Category</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={(value) => {
+                            field.onChange(value);
+                            setShowCustomCategory(value === 'Custom');
+                          }} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select category" />
@@ -237,6 +260,22 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                         </FormItem>
                       )}
                     />
+                    
+                    {selectedCategory === 'Custom' && (
+                      <FormField
+                        control={form.control}
+                        name="customCategory"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Custom Category</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter custom category" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
                     
                     <FormField
                       control={form.control}
@@ -357,6 +396,20 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       </FormItem>
                     )}
                   />
+                  
+                  <FormField
+                    control={form.control}
+                    name="locationCustomName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location Details (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Gallery 2, Showcase A" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 
@@ -397,7 +450,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="depth"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Depth</FormLabel>
+                        <FormLabel>Depth (Optional)</FormLabel>
                         <FormControl>
                           <Input type="number" step="0.1" {...field} />
                         </FormControl>
@@ -484,6 +537,25 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                         </FormItem>
                       )}
                     />
+                  </div>
+                  
+                  {selectedAcquisitionMethod === 'Donation' && (
+                    <FormField
+                      control={form.control}
+                      name="donorName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Donor Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Name of the donor" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  
+                  <div className="grid grid-cols-1 gap-4">
                   </div>
                   
                   <FormField

@@ -42,17 +42,33 @@ const ArtifactDetailsDialog = ({ open, artifact, onClose, onEdit }: ArtifactDeta
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="aspect-video bg-muted rounded overflow-hidden relative">
-            {artifact.imageUrl ? (
-              <img
-                src={artifact.imageUrl}
-                alt={`Photo of ${artifact.title} (Accession ${artifact.accessionNumber})`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                <Package className="h-12 w-12" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="aspect-video bg-muted rounded overflow-hidden relative">
+              {artifact.imageUrl ? (
+                <img
+                  src={artifact.imageUrl}
+                  alt={`Photo of ${artifact.title} (Accession ${artifact.accessionNumber})`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  <Package className="h-12 w-12" />
+                </div>
+              )}
+            </div>
+            
+            {artifact.vitrineImageUrl && (
+              <div className="aspect-video bg-muted rounded overflow-hidden relative">
+                <img
+                  src={artifact.vitrineImageUrl}
+                  alt={`Vitrine photo of ${artifact.title}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute bottom-2 left-2">
+                  <Badge variant="secondary" className="text-xs">Vitrine</Badge>
+                </div>
               </div>
             )}
           </div>
@@ -63,7 +79,15 @@ const ArtifactDetailsDialog = ({ open, artifact, onClose, onEdit }: ArtifactDeta
 
               <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" /> {artifact.period}</span>
-                <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" /> <span className="capitalize">{artifact.location}</span></span>
+                <span className="inline-flex items-center gap-1">
+                  <MapPin className="h-4 w-4" /> 
+                  <span className="capitalize">{artifact.location}</span>
+                  {artifact.conservationNotes && artifact.conservationNotes.includes('Location:') && (
+                    <span className="text-xs ml-1 text-muted-foreground">
+                      ({artifact.conservationNotes.split('Location:')[1]?.split('\n')[0]?.trim()})
+                    </span>
+                  )}
+                </span>
               </div>
 
               {artifact.tags?.length > 0 && (
