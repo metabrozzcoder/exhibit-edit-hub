@@ -105,6 +105,9 @@ Deno.serve(async (req) => {
       }
     })
 
+    // Important: Do not set session for the newly created user
+    // This prevents switching the current admin's session
+
     if (createError || !userData.user) {
       console.error('Error creating user in auth:', createError)
       return new Response(
