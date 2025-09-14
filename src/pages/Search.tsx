@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Search, MapPin, Building, Users, FileText, Settings, UserPlus, Package, Tag, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ import { Artifact } from '@/types/artifact';
 const SearchPage = () => {
   const { searchArtifacts, filterArtifacts, getCategories, getConditions, getLocations, getAllTags, updateArtifact, deleteArtifact } = useArtifacts();
   const { permissions } = useAuth();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState('all');
@@ -31,7 +33,7 @@ const SearchPage = () => {
   
   const quickSearches = [
     { 
-      label: 'Ancient Greek', 
+      label: t('search.quickSearches.ancientGreek'), 
       icon: Building, 
       action: () => {
         setSearchTerm('Ancient Greek');
@@ -39,7 +41,7 @@ const SearchPage = () => {
       }
     },
     { 
-      label: 'In Vitrine', 
+      label: t('search.quickSearches.inVitrine'), 
       icon: MapPin, 
       action: () => {
         setSelectedLocation('vitrine');
@@ -47,7 +49,7 @@ const SearchPage = () => {
       }
     },
     { 
-      label: 'In Warehouse', 
+      label: t('search.quickSearches.inWarehouse'), 
       icon: Package, 
       action: () => {
         setSelectedLocation('warehouse');
@@ -55,7 +57,7 @@ const SearchPage = () => {
       }
     },
     { 
-      label: 'Classical Art', 
+      label: t('search.quickSearches.classicalArt'), 
       icon: Tag, 
       action: () => {
         setSelectedTags(prev => prev.includes('Classical') ? prev : [...prev, 'Classical']);
@@ -99,11 +101,11 @@ const SearchPage = () => {
   };
 
   const handleDelete = (artifactId: string) => {
-    if (confirm('Are you sure you want to delete this artifact? This action cannot be undone.')) {
+    if (confirm(t('search.deleteConfirm'))) {
       deleteArtifact(artifactId);
       toast({
-        title: "Artifact deleted",
-        description: "The artifact has been successfully removed from the collection.",
+        title: t('search.artifactDeleted'),
+        description: t('search.artifactDeletedDesc'),
       });
     }
   };
@@ -123,9 +125,9 @@ const SearchPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">Search</h1>
+        <h1 className="text-3xl font-bold text-museum-bronze">{t('search.title')}</h1>
         <p className="text-muted-foreground">
-          Find artifacts across your collection
+          {t('search.subtitle')}
         </p>
       </div>
 

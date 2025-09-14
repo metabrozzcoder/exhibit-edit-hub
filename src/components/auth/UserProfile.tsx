@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +13,7 @@ import { Eye, EyeOff, Settings, User, Lock, Shield } from 'lucide-react';
 const UserProfile = () => {
   const { user, changePassword } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const [showPassword, setShowPassword] = useState(false);
   const [passwordForm, setPasswordForm] = useState({

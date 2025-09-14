@@ -20,19 +20,19 @@ const SettingsPage = () => {
   const handleSettingChange = async (key: string, value: boolean) => {
     if (!settings) return;
     
-    try {
-      await saveSettings({ [key]: value });
-      toast({
-        title: "Setting updated",
-        description: "Your preference has been saved.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save setting. Please try again.",
-        variant: "destructive",
-      });
-    }
+      try {
+        await saveSettings({ [key]: value });
+        toast({
+          title: t('settings.settingUpdated'),
+          description: t('settings.preferencesSaved'),
+        });
+      } catch (error) {
+        toast({
+          title: t('common.error'),
+          description: t('settings.settingsError'),
+          variant: "destructive",
+        });
+      }
   };
 
   const handleLanguageChange = async (language: string) => {

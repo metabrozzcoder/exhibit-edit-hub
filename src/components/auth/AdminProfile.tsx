@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +19,7 @@ const AdminProfile = () => {
   const { user, permissions, getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, changePassword } = useAuth();
   const { notifyUserCreated, notifySuccess, notifyError } = useNotifications();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const [showPassword, setShowPassword] = useState(false);
   const [passwordForm, setPasswordForm] = useState({

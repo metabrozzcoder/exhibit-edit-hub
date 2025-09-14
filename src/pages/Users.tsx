@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, Edit, Trash2, Shield, Mail, Calendar, UserCheck, UserX } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +17,7 @@ import UserCredentialsDisplay from '@/components/auth/UserCredentialsDisplay';
 const UsersPage = () => {
   const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions, user: currentUser } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
