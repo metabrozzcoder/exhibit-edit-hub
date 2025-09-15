@@ -17,7 +17,7 @@ const SettingsPage = () => {
   usePageTitle('settings');
   const { user } = useAuth();
   const { settings, isLoading, saveSettings } = useSettings();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['pages', 'common']);
   const { changeLanguage, currentLanguage } = useLanguage();
 
   const handleSettingChange = async (key: string, value: boolean) => {

@@ -20,7 +20,7 @@ const UsersPage = () => {
   usePageTitle('users');
   const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions, user: currentUser } = useAuth();
   const { toast } = useToast();
-  const { t } = useTranslation(['users', 'common']);
+  const { t } = useTranslation(['pages', 'common']);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');

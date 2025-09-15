@@ -23,7 +23,7 @@ const SearchPage = () => {
   usePageTitle('search');
   const { searchArtifacts, filterArtifacts, getCategories, getConditions, getLocations, getAllTags, updateArtifact, deleteArtifact } = useArtifacts();
   const { permissions } = useAuth();
-  const { t } = useTranslation(['search', 'common']);
+  const { t } = useTranslation(['pages', 'common', 'forms']);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState('all');
@@ -36,7 +36,7 @@ const SearchPage = () => {
   
   const quickSearches = [
     { 
-      label: t('search.quickSearches.ancientGreek'), 
+      label: t('pages:search.quickSearches.ancientGreek'), 
       icon: Building, 
       action: () => {
         setSearchTerm('Ancient Greek');
@@ -44,7 +44,7 @@ const SearchPage = () => {
       }
     },
     { 
-      label: t('search.quickSearches.inVitrine'), 
+      label: t('pages:search.quickSearches.inVitrine'), 
       icon: MapPin, 
       action: () => {
         setSelectedLocation('vitrine');
@@ -52,7 +52,7 @@ const SearchPage = () => {
       }
     },
     { 
-      label: t('search.quickSearches.inWarehouse'), 
+      label: t('pages:search.quickSearches.inWarehouse'), 
       icon: Package, 
       action: () => {
         setSelectedLocation('warehouse');
@@ -60,7 +60,7 @@ const SearchPage = () => {
       }
     },
     { 
-      label: t('search.quickSearches.classicalArt'), 
+      label: t('pages:search.quickSearches.classicalArt'), 
       icon: Tag, 
       action: () => {
         setSelectedTags(prev => prev.includes('Classical') ? prev : [...prev, 'Classical']);
@@ -104,11 +104,11 @@ const SearchPage = () => {
   };
 
   const handleDelete = (artifactId: string) => {
-    if (confirm(t('search.deleteConfirm'))) {
+    if (confirm(t('pages:search.deleteConfirm'))) {
       deleteArtifact(artifactId);
       toast({
-        title: t('search.artifactDeleted'),
-        description: t('search.artifactDeletedDesc'),
+        title: t('pages:search.artifactDeleted'),
+        description: t('pages:search.artifactDeletedDesc'),
       });
     }
   };
@@ -133,7 +133,7 @@ const SearchPage = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by title, accession number, description, culture..."
+            placeholder={t('forms:placeholders.searchArtifacts')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 text-lg"
@@ -166,7 +166,7 @@ const SearchPage = () => {
             >
               <span className="flex items-center">
                 <Settings className="h-4 w-4 mr-2" />
-                Filters
+                {t('forms:filters')}
               </span>
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-2">
@@ -179,13 +179,13 @@ const SearchPage = () => {
               <CollapsibleContent className="space-y-2">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Category" />
+                    <SelectValue placeholder={t('forms:fields.category')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="all">{t('forms:categories.allCategories')}</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
-                        {category}
+                        {t(`forms:categories.${category.toLowerCase().replace(/\s+/g, '')}`, { defaultValue: category })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -193,13 +193,13 @@ const SearchPage = () => {
                 
                 <Select value={selectedCondition} onValueChange={setSelectedCondition}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Condition" />
+                    <SelectValue placeholder={t('forms:fields.condition')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Conditions</SelectItem>
+                    <SelectItem value="all">{t('forms:conditions.allConditions')}</SelectItem>
                     {conditions.map(condition => (
                       <SelectItem key={condition} value={condition}>
-                        {condition}
+                        {t(`forms:conditions.${condition.toLowerCase()}`, { defaultValue: condition })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -207,10 +207,10 @@ const SearchPage = () => {
                 
                 <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Location" />
+                    <SelectValue placeholder={t('forms:fields.location')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
+                    <SelectItem value="all">{t('forms:fields.location')}</SelectItem>
                     {locations.map(location => (
                       <SelectItem key={location} value={location}>
                         <span className="capitalize">{location}</span>
@@ -251,7 +251,7 @@ const SearchPage = () => {
         {/* Active Filters Display */}
         {hasFilters && (
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm text-muted-foreground">Active filters:</span>
+            <span className="text-sm text-muted-foreground">{t('pages:search.activeFilters')}</span>
             {searchTerm && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 Search: "{searchTerm}"
@@ -326,13 +326,13 @@ const SearchPage = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">
-              Search Results ({searchResults.length} found)
+              {t('pages:search.searchResults', { count: searchResults.length })}
             </h2>
             <Button 
               variant="outline" 
               onClick={clearAllFilters}
             >
-              Clear Filters
+              {t('pages:search.clearFilters')}
             </Button>
           </div>
           
@@ -340,9 +340,9 @@ const SearchPage = () => {
             <Card>
               <CardContent className="p-12 text-center">
                 <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No artifacts found</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('pages:search.noResultsFound')}</h3>
                 <p className="text-muted-foreground">
-                  Try adjusting your search criteria or filters
+                  {t('pages:search.tryAdjusting')}
                 </p>
               </CardContent>
             </Card>

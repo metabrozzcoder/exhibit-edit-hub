@@ -16,7 +16,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 const History = () => {
   usePageTitle('history');
   const { profile } = useAuth();
-  const { t } = useTranslation(['common', 'history']);
+  const { t } = useTranslation(['pages', 'common']);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [history, setHistory] = useState<ArtifactHistory[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -116,9 +116,9 @@ const History = () => {
       <div className="flex items-center justify-center h-96">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>{t('history:accessDenied')}</CardTitle>
+            <CardTitle>{t('pages:history.accessDenied')}</CardTitle>
             <CardDescription>
-              {t('history:adminOnly')}
+              {t('pages:history.adminOnly')}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -177,7 +177,7 @@ const History = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder={t('history:searchPlaceholder')}
+              placeholder={t('pages:history.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 max-w-md"
@@ -191,10 +191,10 @@ const History = () => {
               <SelectValue placeholder="Action" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('history:allActions')}</SelectItem>
-              <SelectItem value="created">{t('history:created')}</SelectItem>
-              <SelectItem value="updated">{t('history:updated')}</SelectItem>
-              <SelectItem value="deleted">{t('history:deleted')}</SelectItem>
+              <SelectItem value="all">{t('pages:history.allActions')}</SelectItem>
+              <SelectItem value="created">{t('pages:history.created')}</SelectItem>
+              <SelectItem value="updated">{t('pages:history.updated')}</SelectItem>
+              <SelectItem value="deleted">{t('pages:history.deleted')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -203,7 +203,7 @@ const History = () => {
       {isLoading ? (
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">{t('history:loadingHistory')}</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('pages:history.loadingHistory')}</h3>
         </div>
       ) : filteredHistory.length === 0 ? (
         <div className="text-center py-12">
@@ -237,7 +237,7 @@ const History = () => {
                         </div>
                       </div>
                       <Badge className={getActionColor(entry.action)}>
-                        {t(`history:${entry.action}`)}
+                        {t(`pages:history.${entry.action}`)}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -254,15 +254,15 @@ const History = () => {
                       </div>
                     </div>
                     
-                     {entry.notes && (
-                       <p className="text-sm bg-muted p-3 rounded-md">
-                         <strong>{t('history:notes')}:</strong> {entry.notes}
-                       </p>
+                      {entry.notes && (
+                        <p className="text-sm bg-muted p-3 rounded-md">
+                          <strong>{t('pages:history.notes')}:</strong> {entry.notes}
+                        </p>
                      )}
                      
                      {Object.keys(entry.changes).length > 0 && (
-                       <div className="space-y-2">
-                         <h4 className="text-sm font-medium">{t('history:changes')}:</h4>
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium">{t('pages:history.changes')}:</h4>
                         <div className="space-y-2">
                           {Object.entries(entry.changes).map(([field, change]) => (
                             <div key={field} className="bg-muted p-3 rounded-md text-sm">
@@ -270,8 +270,8 @@ const History = () => {
                                 {field.replace(/([A-Z])/g, ' $1').trim()}:
                               </div>
                                <div className="grid grid-cols-2 gap-2 text-xs">
-                                 <div>
-                                   <span className="text-red-600 font-medium">{t('history:before')}:</span>
+                                  <div>
+                                    <span className="text-red-600 font-medium">{t('pages:history.before')}:</span>
                                    <p className="mt-1 p-2 bg-red-50 rounded border">
                                      {typeof change.old === 'object' 
                                        ? JSON.stringify(change.old, null, 2)
@@ -279,8 +279,8 @@ const History = () => {
                                      }
                                    </p>
                                  </div>
-                                 <div>
-                                   <span className="text-green-600 font-medium">{t('history:after')}:</span>
+                                  <div>
+                                    <span className="text-green-600 font-medium">{t('pages:history.after')}:</span>
                                    <p className="mt-1 p-2 bg-green-50 rounded border">
                                      {typeof change.new === 'object' 
                                        ? JSON.stringify(change.new, null, 2)

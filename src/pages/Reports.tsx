@@ -10,7 +10,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 
 const ReportsPage = () => {
   const { user } = useAuth();
-  const { t } = useTranslation(['reports', 'common']);
+  const { t } = useTranslation(['pages', 'common']);
   const [activeTab, setActiveTab] = useState('list');
   
   usePageTitle('reports');
@@ -21,9 +21,9 @@ const ReportsPage = () => {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <FileText className="h-16 w-16 mx-auto text-muted-foreground" />
-          <h2 className="text-2xl font-semibold">{t('reports:accessRestricted')}</h2>
+          <h2 className="text-2xl font-semibold">{t('pages:reports.accessRestricted')}</h2>
           <p className="text-muted-foreground max-w-md">
-            {t('reports:noPermission')}
+            {t('pages:reports.noPermission')}
           </p>
         </div>
       </div>
@@ -42,11 +42,11 @@ const ReportsPage = () => {
         <TabsList className="grid w-full grid-cols-2 max-w-md">
           <TabsTrigger value="list" className="flex items-center gap-2">
             <List className="h-4 w-4" />
-            {t('reports:viewReports')}
+            {t('pages:reports.viewReports')}
           </TabsTrigger>
           <TabsTrigger value="create" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
-            {t('reports:createReport')}
+            {t('pages:reports.createReport')}
           </TabsTrigger>
         </TabsList>
 

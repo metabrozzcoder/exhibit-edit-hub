@@ -20,9 +20,9 @@ const Artifacts = () => {
   usePageTitle('artifacts');
   const { permissions } = useAuth();
   const { notifyArtifactAdded, notifyArtifactUpdated, notifyArtifactDeleted } = useNotifications();
-  const { t } = useTranslation(['artifacts', 'common']);
+  const { t } = useTranslation(['pages', 'common', 'forms']);
   const { 
-    artifacts, 
+    artifacts,
     filterArtifacts, 
     getCategories, 
     getConditions, 
@@ -60,14 +60,14 @@ const Artifacts = () => {
 
   const handleDelete = (artifactId: string) => {
     const artifact = artifacts.find(a => a.id === artifactId);
-    if (confirm(t('artifacts:deleteConfirm'))) {
+    if (confirm(t('pages:artifacts.deleteSuccess'))) {
       deleteArtifact(artifactId);
       if (artifact) {
         notifyArtifactDeleted(artifact.title, artifact.accessionNumber);
       }
       toast({
-        title: t('artifacts:deleteSuccess'),
-        description: t('artifacts:deleteSuccessDesc'),
+        title: t('pages:artifacts.deleteSuccess'),
+        description: t('pages:artifacts.deleteSuccessDesc'),
       });
     }
   };
@@ -82,16 +82,16 @@ const Artifacts = () => {
       updateArtifact(editingArtifact.id, artifactData);
       notifyArtifactUpdated(artifactData.title || editingArtifact.title, artifactData.accessionNumber || editingArtifact.accessionNumber);
       toast({
-        title: t('artifacts:artifactUpdated'),
-        description: t('artifacts:artifactUpdatedDesc'),
+        title: t('pages:artifacts.exportCompleted'),
+        description: t('pages:artifacts.exportDesc', { count: filteredArtifacts.length }),
       });
     } else {
       // Add new artifact
       addArtifact(artifactData);
       notifyArtifactAdded(artifactData.title || 'New Artifact', artifactData.accessionNumber || 'Unknown');
       toast({
-        title: t('artifacts:artifactCreated'),
-        description: t('artifacts:artifactCreatedDesc'),
+        title: t('pages:artifacts.exportCompleted'),
+        description: t('pages:artifacts.exportDesc', { count: 1 }),
       });
     }
     setShowAddForm(false);
@@ -124,8 +124,8 @@ const Artifacts = () => {
     window.URL.revokeObjectURL(url);
     
     toast({
-      title: t('artifacts:exportCompleted'),
-      description: t('artifacts:exportDesc', { count: filteredArtifacts.length }),
+      title: t('pages:artifacts.exportCompleted'),
+      description: t('pages:artifacts.exportDesc', { count: filteredArtifacts.length }),
     });
   };
 
@@ -148,7 +148,7 @@ const Artifacts = () => {
           {permissions?.canExport && (
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
-              {t('common:export')}
+              {t('common:actions.export')}
             </Button>
           )}
           {permissions?.canCreate && (
@@ -157,7 +157,7 @@ const Artifacts = () => {
               onClick={handleAdd}
             >
               <Plus className="h-4 w-4 mr-2" />
-              {t('artifacts:addArtifact')}
+              {t('pages:artifacts.addArtifact')}
             </Button>
           )}
         </div>
@@ -166,7 +166,7 @@ const Artifacts = () => {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <Input
-            placeholder={t('artifacts:searchPlaceholder')}
+            placeholder={t('forms:placeholders.searchArtifacts')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-md"
@@ -176,13 +176,13 @@ const Artifacts = () => {
         <div className="flex items-center gap-2">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder={t('artifacts:category')} />
+              <SelectValue placeholder={t('forms:fields.category')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('artifacts:allCategories')}</SelectItem>
+              <SelectItem value="all">{t('forms:categories.allCategories')}</SelectItem>
               {categories.map(category => (
                 <SelectItem key={category} value={category}>
-                  {t(`artifacts:${category.toLowerCase().replace(/\s+/g, '')}`)}
+                  {t(`forms:categories.${category.toLowerCase().replace(/\s+/g, '')}`, { defaultValue: category })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -190,13 +190,13 @@ const Artifacts = () => {
           
           <Select value={selectedCondition} onValueChange={setSelectedCondition}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder={t('artifacts:condition')} />
+              <SelectValue placeholder={t('forms:fields.condition')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('artifacts:allConditions')}</SelectItem>
+              <SelectItem value="all">{t('forms:conditions.allConditions')}</SelectItem>
               {conditions.map(condition => (
                 <SelectItem key={condition} value={condition}>
-                  {t(`artifacts:${condition.toLowerCase()}`)}
+                  {t(`forms:conditions.${condition.toLowerCase()}`, { defaultValue: condition })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -208,7 +208,7 @@ const Artifacts = () => {
             className="relative"
           >
             <Filter className="h-4 w-4 mr-2" />
-            {t('artifacts:filters')}
+            {t('forms:filters')}
             {activeFiltersCount > 0 && (
               <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">
                 {activeFiltersCount}
@@ -240,11 +240,11 @@ const Artifacts = () => {
       {filteredArtifacts.length === 0 ? (
         <div className="text-center py-12">
           <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">{t('artifacts:noArtifactsFound')}</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('pages:artifacts.noArtifactsFound')}</h3>
           <p className="text-muted-foreground">
             {searchTerm || selectedCategory !== 'all' || selectedCondition !== 'all'
-              ? t('artifacts:adjustFilters')
-              : t('artifacts:getStarted')
+              ? t('pages:artifacts.adjustFilters')
+              : t('pages:artifacts.getStarted')
             }
           </p>
         </div>
