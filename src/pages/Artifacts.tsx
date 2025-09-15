@@ -57,14 +57,14 @@ const Artifacts = () => {
 
   const handleDelete = (artifactId: string) => {
     const artifact = artifacts.find(a => a.id === artifactId);
-    if (confirm('Are you sure you want to delete this artifact? This action cannot be undone.')) {
+    if (confirm(t('artifacts:deleteConfirm'))) {
       deleteArtifact(artifactId);
       if (artifact) {
         notifyArtifactDeleted(artifact.title, artifact.accessionNumber);
       }
       toast({
-        title: "Artifact deleted",
-        description: "The artifact has been successfully removed from the collection.",
+        title: t('artifacts:deleteSuccess'),
+        description: t('artifacts:deleteSuccessDesc'),
       });
     }
   };
@@ -79,16 +79,16 @@ const Artifacts = () => {
       updateArtifact(editingArtifact.id, artifactData);
       notifyArtifactUpdated(artifactData.title || editingArtifact.title, artifactData.accessionNumber || editingArtifact.accessionNumber);
       toast({
-        title: "Artifact updated",
-        description: "The artifact has been successfully updated.",
+        title: t('artifacts:artifactUpdated'),
+        description: t('artifacts:artifactUpdatedDesc'),
       });
     } else {
       // Add new artifact
       addArtifact(artifactData);
       notifyArtifactAdded(artifactData.title || 'New Artifact', artifactData.accessionNumber || 'Unknown');
       toast({
-        title: "Artifact created",
-        description: "New artifact has been added to the collection.",
+        title: t('artifacts:artifactCreated'),
+        description: t('artifacts:artifactCreatedDesc'),
       });
     }
     setShowAddForm(false);
@@ -121,8 +121,8 @@ const Artifacts = () => {
     window.URL.revokeObjectURL(url);
     
     toast({
-      title: "Export completed",
-      description: `Exported ${filteredArtifacts.length} artifacts to CSV.`,
+      title: t('artifacts:exportCompleted'),
+      description: t('artifacts:exportDesc', { count: filteredArtifacts.length }),
     });
   };
 
@@ -163,7 +163,7 @@ const Artifacts = () => {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <Input
-            placeholder="Search artifacts..."
+            placeholder={t('artifacts:searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-md"
@@ -173,13 +173,13 @@ const Artifacts = () => {
         <div className="flex items-center gap-2">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder={t('artifacts:category')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all">{t('artifacts:allCategories')}</SelectItem>
               {categories.map(category => (
                 <SelectItem key={category} value={category}>
-                  {category}
+                  {t(`artifacts:${category.toLowerCase().replace(/\s+/g, '')}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -187,13 +187,13 @@ const Artifacts = () => {
           
           <Select value={selectedCondition} onValueChange={setSelectedCondition}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Condition" />
+              <SelectValue placeholder={t('artifacts:condition')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Conditions</SelectItem>
+              <SelectItem value="all">{t('artifacts:allConditions')}</SelectItem>
               {conditions.map(condition => (
                 <SelectItem key={condition} value={condition}>
-                  {condition}
+                  {t(`artifacts:${condition.toLowerCase()}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -205,7 +205,7 @@ const Artifacts = () => {
             className="relative"
           >
             <Filter className="h-4 w-4 mr-2" />
-            Filters
+            {t('artifacts:filters')}
             {activeFiltersCount > 0 && (
               <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">
                 {activeFiltersCount}
@@ -237,11 +237,11 @@ const Artifacts = () => {
       {filteredArtifacts.length === 0 ? (
         <div className="text-center py-12">
           <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No artifacts found</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('artifacts:noArtifactsFound')}</h3>
           <p className="text-muted-foreground">
             {searchTerm || selectedCategory !== 'all' || selectedCondition !== 'all'
-              ? 'Try adjusting your search criteria'
-              : 'Get started by adding your first artifact'
+              ? t('artifacts:adjustFilters')
+              : t('artifacts:getStarted')
             }
           </p>
         </div>
