@@ -9,9 +9,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRealtime } from '@/hooks/useRealtime';
 import { supabase } from '@/integrations/supabase/client';
 import { ArtifactHistory } from '@/types/artifact';
+import { useTranslation } from 'react-i18next';
 
 const History = () => {
   const { profile } = useAuth();
+  const { t } = useTranslation(['common', 'history']);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [history, setHistory] = useState<ArtifactHistory[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,9 +113,9 @@ const History = () => {
       <div className="flex items-center justify-center h-96">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
+            <CardTitle>{t('history:accessDenied')}</CardTitle>
             <CardDescription>
-              Only administrators can view the edit history.
+              {t('history:adminOnly')}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -161,9 +163,9 @@ const History = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">Edit History</h1>
+        <h1 className="text-3xl font-bold text-museum-bronze">{t('history:title')}</h1>
         <p className="text-muted-foreground">
-          Track all changes made to artifacts ({filteredHistory.length} entries)
+          {t('history:description')} ({filteredHistory.length} entries)
         </p>
       </div>
 
@@ -172,7 +174,7 @@ const History = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by artifact, user, or notes..."
+              placeholder={t('history:searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 max-w-md"
@@ -186,10 +188,10 @@ const History = () => {
               <SelectValue placeholder="Action" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Actions</SelectItem>
-              <SelectItem value="created">Created</SelectItem>
-              <SelectItem value="updated">Updated</SelectItem>
-              <SelectItem value="deleted">Deleted</SelectItem>
+              <SelectItem value="all">{t('history:allActions')}</SelectItem>
+              <SelectItem value="created">{t('history:created')}</SelectItem>
+              <SelectItem value="updated">{t('history:updated')}</SelectItem>
+              <SelectItem value="deleted">{t('history:deleted')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -198,16 +200,16 @@ const History = () => {
       {isLoading ? (
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Loading history...</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('history:loadingHistory')}</h3>
         </div>
       ) : filteredHistory.length === 0 ? (
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No history found</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('history:noHistoryFound')}</h3>
           <p className="text-muted-foreground">
             {searchTerm || selectedAction !== 'all'
-              ? 'Try adjusting your search criteria'
-              : 'No changes have been recorded yet'
+              ? t('history:adjustCriteria')
+              : t('history:noChangesRecorded')
             }
           </p>
         </div>
@@ -232,7 +234,7 @@ const History = () => {
                         </div>
                       </div>
                       <Badge className={getActionColor(entry.action)}>
-                        {entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}
+                        {t(`history:${entry.action}`)}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -249,41 +251,41 @@ const History = () => {
                       </div>
                     </div>
                     
-                    {entry.notes && (
-                      <p className="text-sm bg-muted p-3 rounded-md">
-                        <strong>Notes:</strong> {entry.notes}
-                      </p>
-                    )}
-                    
-                    {Object.keys(entry.changes).length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium">Changes:</h4>
+                     {entry.notes && (
+                       <p className="text-sm bg-muted p-3 rounded-md">
+                         <strong>{t('history:notes')}:</strong> {entry.notes}
+                       </p>
+                     )}
+                     
+                     {Object.keys(entry.changes).length > 0 && (
+                       <div className="space-y-2">
+                         <h4 className="text-sm font-medium">{t('history:changes')}:</h4>
                         <div className="space-y-2">
                           {Object.entries(entry.changes).map(([field, change]) => (
                             <div key={field} className="bg-muted p-3 rounded-md text-sm">
                               <div className="font-medium mb-1 capitalize">
                                 {field.replace(/([A-Z])/g, ' $1').trim()}:
                               </div>
-                              <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div>
-                                  <span className="text-red-600 font-medium">Before:</span>
-                                  <p className="mt-1 p-2 bg-red-50 rounded border">
-                                    {typeof change.old === 'object' 
-                                      ? JSON.stringify(change.old, null, 2)
-                                      : String(change.old)
-                                    }
-                                  </p>
-                                </div>
-                                <div>
-                                  <span className="text-green-600 font-medium">After:</span>
-                                  <p className="mt-1 p-2 bg-green-50 rounded border">
-                                    {typeof change.new === 'object' 
-                                      ? JSON.stringify(change.new, null, 2)
-                                      : String(change.new)
-                                    }
-                                  </p>
-                                </div>
-                              </div>
+                               <div className="grid grid-cols-2 gap-2 text-xs">
+                                 <div>
+                                   <span className="text-red-600 font-medium">{t('history:before')}:</span>
+                                   <p className="mt-1 p-2 bg-red-50 rounded border">
+                                     {typeof change.old === 'object' 
+                                       ? JSON.stringify(change.old, null, 2)
+                                       : String(change.old)
+                                     }
+                                   </p>
+                                 </div>
+                                 <div>
+                                   <span className="text-green-600 font-medium">{t('history:after')}:</span>
+                                   <p className="mt-1 p-2 bg-green-50 rounded border">
+                                     {typeof change.new === 'object' 
+                                       ? JSON.stringify(change.new, null, 2)
+                                       : String(change.new)
+                                     }
+                                   </p>
+                                 </div>
+                               </div>
                             </div>
                           ))}
                         </div>

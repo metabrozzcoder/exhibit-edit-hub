@@ -84,13 +84,13 @@ const Dashboard = () => {
 
   const locationStats = [
     {
-      title: 'Vitrine Items',
+      title: t('dashboard:vitrineItems'),
       value: inVitrineCount,
       icon: MapPin,
       percentage: Math.round((inVitrineCount / totalArtifacts) * 100) || 0
     },
     {
-      title: 'Warehouse Items', 
+      title: t('dashboard:warehouseItems'), 
       value: inWarehouseCount,
       icon: Warehouse,
       percentage: Math.round((inWarehouseCount / totalArtifacts) * 100) || 0
@@ -131,7 +131,7 @@ const Dashboard = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Location Distribution
+            {t('dashboard:locationDistribution')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -144,7 +144,7 @@ const Dashboard = () => {
                     <Icon className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="font-medium">{location.title}</p>
-                      <p className="text-sm text-muted-foreground">{location.percentage}% of collection</p>
+                      <p className="text-sm text-muted-foreground">{location.percentage}% {t('dashboard:ofCollection')}</p>
                     </div>
                   </div>
                   <div className="text-2xl font-bold">{location.value}</div>
@@ -161,10 +161,10 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Recent Additions
+              {t('dashboard:recentAdditions')}
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={() => navigate('/artifacts')}>
-              View All <ArrowRight className="h-4 w-4 ml-1" />
+              {t('dashboard:viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </CardHeader>
           <CardContent>
@@ -183,7 +183,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               )) : (
-                <p className="text-sm text-muted-foreground">No recent additions</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard:noRecentAdditions')}</p>
               )}
             </div>
           </CardContent>
@@ -194,10 +194,10 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Needs Attention
+              {t('dashboard:needsAttention')}
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={() => navigate('/search')}>
-              View All <ArrowRight className="h-4 w-4 ml-1" />
+              {t('dashboard:viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </CardHeader>
           <CardContent>
@@ -214,13 +214,13 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <Badge variant="outline" className="text-destructive border-destructive">
-                      {artifact.condition}
+                      {t(`forms.conditions.${artifact.condition.toLowerCase()}`, { defaultValue: artifact.condition })}
                     </Badge>
                   </div>
                 ))}
               {needsAttentionCount === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  All artifacts in good condition
+                  {t('dashboard:allArtifactsGoodCondition')}
                 </p>
               )}
             </div>
@@ -232,10 +232,10 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-museum-gold" />
-              Most Valuable
+              {t('dashboard:mostValuable')}
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={() => navigate('/artifacts')}>
-              View All <ArrowRight className="h-4 w-4 ml-1" />
+              {t('dashboard:viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </CardHeader>
           <CardContent>
@@ -261,7 +261,7 @@ const Dashboard = () => {
             </div>
             <div className="mt-4 pt-3 border-t">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Total Collection Value:</span>
+                <span className="text-sm font-medium">{t('dashboard:totalCollectionValue')}:</span>
                 <span className="text-lg font-bold text-museum-gold">
                   ${totalValue.toLocaleString()}
                 </span>
@@ -274,7 +274,7 @@ const Dashboard = () => {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle>{t('dashboard:quickActions')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
@@ -284,7 +284,7 @@ const Dashboard = () => {
               onClick={() => navigate('/artifacts')}
             >
               <Package className="h-6 w-6" />
-              <span>View Artifacts</span>
+              <span>{t('dashboard:viewArtifacts')}</span>
             </Button>
             <Button 
               variant="outline" 
@@ -292,7 +292,7 @@ const Dashboard = () => {
               onClick={() => navigate('/search')}
             >
               <Eye className="h-6 w-6" />
-              <span>Search Collection</span>
+              <span>{t('dashboard:searchCollection')}</span>
             </Button>
             <Button 
               variant="outline" 
@@ -300,7 +300,7 @@ const Dashboard = () => {
               onClick={() => navigate('/users')}
             >
               <Users className="h-6 w-6" />
-              <span>Manage Users</span>
+              <span>{t('dashboard:manageUsers')}</span>
             </Button>
             <Button 
               variant="outline" 
@@ -308,7 +308,7 @@ const Dashboard = () => {
               onClick={() => navigate('/reports')}
             >
               <TrendingUp className="h-6 w-6" />
-              <span>View Reports</span>
+              <span>{t('dashboard:viewReports')}</span>
             </Button>
           </div>
         </CardContent>
