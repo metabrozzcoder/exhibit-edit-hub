@@ -58,7 +58,9 @@
     "currentLocation": "Hozirgi joylashuv",
     "inVitrine": "Vitrinada",
     "inWarehouse": "Omborxonada",
+    "customLocation": "Maxsus joylashuv",
     "locationDetails": "Joylashuv tafsilotlari",
+    "locationImage": "Joylashuv rasmi",
     "dimensions": "O'lchamlar",
     "height": "Balandligi (sm)",
     "width": "Kengligi (sm)",
@@ -73,7 +75,8 @@
     "imageUpload": "Rasm yuklash",
     "vitrineImageUpload": "Vitrina rasmi yuklash",
     "uploadMainImage": "Asosiy artefakt rasmini yuklang",
-    "uploadVitrineImage": "Vitrina ko'rgazmasi rasmini yuklang"
+    "uploadVitrineImage": "Vitrina ko'rgazmasi rasmini yuklang",
+    "uploadLocationImage": "Joylashuv rasmini yuklang"
   },
   "placeholders": {
     "searchArtifacts": "Artefaktlarni qidiring...",
@@ -87,6 +90,7 @@
     "culture": "masalan, Rim, Yunon",
     "material": "masalan, Bronza, Marmar",
     "selectLocation": "Joylashuvni tanlang",
+    "customLocation": "Maxsus joylashuv nomini kiriting",
     "locationDetails": "masalan, Javon A3, Shkaf 2",
     "provenance": "Kelib chiqishi haqida ma'lumot kiriting",
     "acquisitionDate": "Sotib olish sanasini tanlang",
@@ -103,8 +107,10 @@
     "remove": "Olib tashlash",
     "uploadImage": "Rasm yuklash",
     "uploadVitrineImage": "Vitrina rasmini yuklash",
+    "uploadLocationImage": "Joylashuv rasmini yuklash",
     "replaceImage": "Rasmni almashtirish",
-    "replaceVitrineImage": "Vitrina rasmini almashtirish"
+    "replaceVitrineImage": "Vitrina rasmini almashtirish",
+    "replaceLocationImage": "Joylashuv rasmini almashtirish"
   },
   "filters": "Filtrlar"
 }

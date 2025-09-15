@@ -58,7 +58,9 @@
     "currentLocation": "Current Location",
     "inVitrine": "In Vitrine",
     "inWarehouse": "In Warehouse",
+    "customLocation": "Custom Location",
     "locationDetails": "Location Details",
+    "locationImage": "Location Image",
     "dimensions": "Dimensions",
     "height": "Height (cm)",
     "width": "Width (cm)",
@@ -73,7 +75,8 @@
     "imageUpload": "Image Upload",
     "vitrineImageUpload": "Vitrine Image Upload",
     "uploadMainImage": "Upload main artifact image",
-    "uploadVitrineImage": "Upload vitrine display image"
+    "uploadVitrineImage": "Upload vitrine display image",
+    "uploadLocationImage": "Upload location image"
   },
   "placeholders": {
     "searchArtifacts": "Search artifacts...",
@@ -87,6 +90,7 @@
     "culture": "e.g., Roman, Greek",
     "material": "e.g., Bronze, Marble",
     "selectLocation": "Select location",
+    "customLocation": "Enter custom location name",
     "locationDetails": "e.g., Shelf A3, Cabinet 2",
     "provenance": "Enter provenance information",
     "acquisitionDate": "Select acquisition date",
@@ -103,8 +107,10 @@
     "remove": "Remove",
     "uploadImage": "Upload Image",
     "uploadVitrineImage": "Upload Vitrine Image",
+    "uploadLocationImage": "Upload Location Image",
     "replaceImage": "Replace Image",
-    "replaceVitrineImage": "Replace Vitrine Image"
+    "replaceVitrineImage": "Replace Vitrine Image",
+    "replaceLocationImage": "Replace Location Image"
   },
   "filters": "Filters"
 }

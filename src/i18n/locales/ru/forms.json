@@ -58,7 +58,9 @@
     "currentLocation": "Текущее местоположение",
     "inVitrine": "В витрине",
     "inWarehouse": "На складе",
+    "customLocation": "Пользовательское местоположение",
     "locationDetails": "Детали местоположения",
+    "locationImage": "Изображение местоположения",
     "dimensions": "Размеры",
     "height": "Высота (см)",
     "width": "Ширина (см)",
@@ -103,8 +105,10 @@
     "remove": "Удалить",
     "uploadImage": "Загрузить изображение",
     "uploadVitrineImage": "Загрузить изображение витрины",
+    "uploadLocationImage": "Загрузить изображение местоположения",
     "replaceImage": "Заменить изображение",
-    "replaceVitrineImage": "Заменить изображение витрины"
+    "replaceVitrineImage": "Заменить изображение витрины",
+    "replaceLocationImage": "Заменить изображение местоположения"
   },
   "filters": "Фильтры"
 }

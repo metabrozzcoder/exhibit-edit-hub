@@ -14,7 +14,7 @@ export interface Artifact {
     weight?: number;
   };
   condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | 'Damaged';
-  location: 'vitrine' | 'warehouse';
+  location: 'vitrine' | 'warehouse' | 'custom';
   imageUrl?: string;
   vitrineImageUrl?: string;
   provenance: string;

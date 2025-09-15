@@ -28,7 +28,7 @@ const artifactSchema = z.object({
   depth: z.coerce.number().positive().optional(),
   weight: z.coerce.number().positive().optional(),
   condition: z.enum(['Excellent', 'Good', 'Fair', 'Poor', 'Damaged']),
-  location: z.enum(['warehouse', 'vitrine']),
+  location: z.enum(['warehouse', 'vitrine', 'custom']),
   locationCustomName: z.string().optional(),
   provenance: z.string().min(1, 'Provenance is required'),
   acquisitionDate: z.string().min(1, 'Acquisition date is required'),
@@ -55,6 +55,8 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
   const [imagePreview, setImagePreview] = useState<string>(initialData?.imageUrl || '');
   const [vitrineImageFile, setVitrineImageFile] = useState<File | null>(null);
   const [vitrineImagePreview, setVitrineImagePreview] = useState<string>(initialData?.vitrineImageUrl || '');
+  const [locationImageFile, setLocationImageFile] = useState<File | null>(null);
+  const [locationImagePreview, setLocationImagePreview] = useState<string>('');
   const [showCustomCategory, setShowCustomCategory] = useState<boolean>(false);
 
   const form = useForm<ArtifactFormData>({
@@ -92,6 +94,16 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       setVitrineImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => setVitrineImagePreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLocationImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLocationImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setLocationImagePreview(e.target?.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -162,7 +174,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
   const categories = ['Ceramics', 'Stone Objects', 'Glass', 'Metalwork', 'Textiles', 'Paintings', 'Sculptures', 'Custom'];
   const conditions = ['Excellent', 'Good', 'Fair', 'Poor', 'Damaged'];
   const acquisitionMethods = ['Purchase', 'Donation', 'Loan', 'Bequest', 'Transfer'];
-  const locations = ['warehouse', 'vitrine'];
+  const locations = ['warehouse', 'vitrine', 'custom'];
 
   const selectedLocation = form.watch('location');
   const selectedCategory = form.watch('category');
@@ -367,6 +379,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                           <SelectContent>
                             <SelectItem value="vitrine">{t('forms:labels.inVitrine')}</SelectItem>
                             <SelectItem value="warehouse">{t('forms:labels.inWarehouse')}</SelectItem>
+                            <SelectItem value="custom">{t('forms:labels.customLocation')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -374,6 +387,22 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     )}
                   />
                   
+                  {selectedLocation === 'custom' && (
+                    <FormField
+                      control={form.control}
+                      name="locationCustomName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('forms:labels.customLocation')}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t('forms:placeholders.customLocation')} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
                   <FormField
                     control={form.control}
                     name="locationCustomName"
@@ -387,6 +416,49 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       </FormItem>
                     )}
                   />
+
+                  {/* Location Image Upload */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t('forms:labels.locationImage')}</label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLocationImageChange}
+                          className="hidden"
+                          id="location-image-upload"
+                        />
+                        <label
+                          htmlFor="location-image-upload"
+                          className="flex items-center gap-2 px-4 py-2 border border-input rounded-md cursor-pointer hover:bg-accent"
+                        >
+                          <Upload className="h-4 w-4" />
+                          {locationImagePreview ? t('forms:buttons.replaceLocationImage') : t('forms:buttons.uploadLocationImage')}
+                        </label>
+                      </div>
+                      {locationImagePreview && (
+                        <div className="relative">
+                          <img 
+                            src={locationImagePreview} 
+                            alt="Location preview" 
+                            className="w-20 h-20 object-cover rounded-md border" 
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLocationImageFile(null);
+                              setLocationImagePreview('');
+                            }}
+                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t('forms:labels.uploadLocationImage')}</p>
+                  </div>
                 </div>
               </div>
 
