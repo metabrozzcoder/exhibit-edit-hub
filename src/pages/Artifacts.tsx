@@ -76,26 +76,35 @@ const Artifacts = () => {
     setViewingArtifact(artifact);
   };
 
-  const handleSave = (artifactData: Partial<Artifact>) => {
-    if (editingArtifact) {
-      // Update existing artifact
-      updateArtifact(editingArtifact.id, artifactData);
-      notifyArtifactUpdated(artifactData.title || editingArtifact.title, artifactData.accessionNumber || editingArtifact.accessionNumber);
+  const handleSave = async (artifactData: Partial<Artifact>) => {
+    try {
+      if (editingArtifact) {
+        // Update existing artifact
+        await updateArtifact(editingArtifact.id, artifactData);
+        notifyArtifactUpdated(artifactData.title || editingArtifact.title, artifactData.accessionNumber || editingArtifact.accessionNumber);
+        toast({
+          title: t('pages:artifacts.updated'),
+          description: t('pages:artifacts.updatedDesc'),
+        });
+      } else {
+        // Add new artifact
+        await addArtifact(artifactData);
+        notifyArtifactAdded(artifactData.title || 'New Artifact', artifactData.accessionNumber || 'Unknown');
+        toast({
+          title: t('pages:artifacts.added'),
+          description: t('pages:artifacts.addedDesc'),
+        });
+      }
+      setShowAddForm(false);
+      setEditingArtifact(null);
+    } catch (error) {
+      console.error('Error saving artifact:', error);
       toast({
-        title: t('pages:artifacts.exportCompleted'),
-        description: t('pages:artifacts.exportDesc', { count: filteredArtifacts.length }),
-      });
-    } else {
-      // Add new artifact
-      addArtifact(artifactData);
-      notifyArtifactAdded(artifactData.title || 'New Artifact', artifactData.accessionNumber || 'Unknown');
-      toast({
-        title: t('pages:artifacts.exportCompleted'),
-        description: t('pages:artifacts.exportDesc', { count: 1 }),
+        title: t('common:error'),
+        description: t('pages:artifacts.saveError'),
+        variant: 'destructive',
       });
     }
-    setShowAddForm(false);
-    setEditingArtifact(null);
   };
 
   const handleExport = () => {

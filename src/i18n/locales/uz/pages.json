@@ -37,6 +37,11 @@
     "exportDesc": "{{count}} ta element CSV ga eksport qilindi.",
     "deleteSuccess": "Artefakt o'chirildi",
     "deleteSuccessDesc": "Artefakt muvaffaqiyatli o'chirildi.",
+    "added": "Artifakt qo'shildi",
+    "addedDesc": "Artifakt to'plamga muvaffaqiyatli qo'shildi",
+    "updated": "Artifakt yangilandi",
+    "updatedDesc": "Artifakt muvaffaqiyatli yangilandi",
+    "saveError": "Artifaktni saqlashda xatolik. Qayta urinib ko'ring.",
     "addArtifact": "Artefakt qo'shish",
     "gridView": "Panjara ko'rinishi",
     "listView": "Ro'yxat ko'rinishi"

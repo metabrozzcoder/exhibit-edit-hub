@@ -37,6 +37,11 @@
     "exportDesc": "{{count}} items exported to CSV.",
     "deleteSuccess": "Artifact Deleted",
     "deleteSuccessDesc": "The artifact has been successfully deleted.",
+    "added": "Artifact Added",
+    "addedDesc": "Artifact has been successfully added to the collection",
+    "updated": "Artifact Updated", 
+    "updatedDesc": "Artifact has been successfully updated",
+    "saveError": "Failed to save artifact. Please try again.",
     "addArtifact": "Add Artifact",
     "gridView": "Grid View",
     "listView": "List View"
