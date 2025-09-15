@@ -11,12 +11,12 @@ import { useTranslation } from 'react-i18next';
 
 const LanguageSwitcher = () => {
   const { changeLanguage, currentLanguage } = useLanguage();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common']);
 
   const languages = [
-    { code: 'en', name: t('english'), flag: '🇺🇸' },
-    { code: 'ru', name: t('russian'), flag: '🇷🇺' },
-    { code: 'uz', name: t('uzbek'), flag: '🇺🇿' }
+    { code: 'en', name: t('common:english'), flag: '🇺🇸' },
+    { code: 'ru', name: t('common:russian'), flag: '🇷🇺' },
+    { code: 'uz', name: t('common:uzbek'), flag: '🇺🇿' }
   ];
 
   const currentLang = languages.find(lang => lang.code === currentLanguage) || languages[0];

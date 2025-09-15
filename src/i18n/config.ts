@@ -36,7 +36,10 @@ export const resources = {
         actions: 'Actions',
         export: 'Export',
         history: 'History',
-        logout: 'Logout'
+        logout: 'Logout',
+        english: 'English',
+        russian: 'Russian',
+        uzbek: 'Uzbek'
       },
       artifacts: {
         title: 'Artifacts',
@@ -82,6 +85,16 @@ export const resources = {
         changeImage: 'Change Image',
         removeImage: 'Remove Image',
         viewFullSize: 'View full size',
+        manageCollection: 'Manage your collection ({{shown}} of {{total}} shown)',
+        allCategories: 'All Categories',
+        allConditions: 'All Conditions',
+        filters: 'Filters',
+        exportCompleted: 'Export completed',
+        exportDesc: '{{count}} items exported to CSV.',
+        deleteSuccess: 'Artifact Deleted',
+        deleteSuccessDesc: 'The artifact has been successfully deleted.',
+        adjustFilters: 'Try adjusting your search or filters',
+        getStarted: 'Start by adding your first artifact',
         search: 'Search'
       },
       dashboard: {
@@ -365,7 +378,10 @@ export const resources = {
         actions: 'Действия',
         export: 'Экспорт',
         history: 'История',
-        logout: 'Выйти'
+        logout: 'Выйти',
+        english: 'Английский',
+        russian: 'Русский',
+        uzbek: 'Узбекский'
       },
       artifacts: {
         title: 'Артефакты',
@@ -411,6 +427,16 @@ export const resources = {
         changeImage: 'Изменить изображение',
         removeImage: 'Удалить изображение',
         viewFullSize: 'Просмотр в полном размере',
+        manageCollection: 'Управляйте коллекцией (показано {{shown}} из {{total}})',
+        allCategories: 'Все категории',
+        allConditions: 'Все состояния',
+        filters: 'Фильтры',
+        exportCompleted: 'Экспорт завершен',
+        exportDesc: '{{count}} элементов экспортировано в CSV.',
+        deleteSuccess: 'Артефакт удален',
+        deleteSuccessDesc: 'Артефакт успешно удален.',
+        adjustFilters: 'Попробуйте изменить поиск или фильтры',
+        getStarted: 'Начните с добавления первого артефакта',
         search: 'Поиск'
       },
       dashboard: {
@@ -694,7 +720,10 @@ export const resources = {
         actions: 'Harakatlar',
         export: 'Eksport',
         history: 'Tarix',
-        logout: 'Chiqish'
+        logout: 'Chiqish',
+        english: 'Inglizcha',
+        russian: 'Ruscha',
+        uzbek: 'O\'zbekcha'
       },
       artifacts: {
         title: 'Artefaktlar',
