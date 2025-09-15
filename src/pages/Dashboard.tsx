@@ -53,34 +53,34 @@ const Dashboard = () => {
 
   const stats = [
     {
-      title: t('dashboard:totalArtifacts'),
+      title: t('pages:dashboard.totalArtifacts'),
       value: totalArtifacts,
       icon: Package,
-      description: t('dashboard:inCollection'),
+      description: t('pages:dashboard.inCollection'),
       color: 'text-museum-bronze',
       onClick: () => navigate('/artifacts')
     },
     {
-      title: t('dashboard:inVitrine'),
+      title: t('pages:dashboard.inVitrine'),
       value: inVitrineCount,
       icon: Eye,
-      description: t('dashboard:currentlyExhibited'),
+      description: t('pages:dashboard.currentlyExhibited'),
       color: 'text-heritage-blue',
       onClick: () => navigate('/search?location=vitrine')
     },
     {
-      title: t('dashboard:activeUsers'),
+      title: t('pages:dashboard.activeUsers'),
       value: activeUsers,
       icon: Users,
-      description: t('dashboard:ofTotalUsers', { total: allUsers.length }),
+      description: t('pages:dashboard.ofTotalUsers', { total: allUsers.length }),
       color: 'text-museum-gold',
       onClick: () => navigate('/users')
     },
     {
-      title: t('dashboard:needAttention'),
+      title: t('pages:dashboard.needAttention'),
       value: needsAttentionCount,
       icon: AlertTriangle,
-      description: t('dashboard:conditionIssues'),
+      description: t('pages:dashboard.conditionIssues'),
       color: 'text-destructive',
       onClick: () => navigate('/search?condition=fair')
     }
@@ -88,13 +88,13 @@ const Dashboard = () => {
 
   const locationStats = [
     {
-      title: t('dashboard:vitrineItems'),
+      title: t('pages:dashboard.vitrineItems'),
       value: inVitrineCount,
       icon: MapPin,
       percentage: Math.round((inVitrineCount / totalArtifacts) * 100) || 0
     },
     {
-      title: t('dashboard:warehouseItems'), 
+      title: t('pages:dashboard.warehouseItems'), 
       value: inWarehouseCount,
       icon: Warehouse,
       percentage: Math.round((inWarehouseCount / totalArtifacts) * 100) || 0
@@ -132,7 +132,7 @@ const Dashboard = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            {t('dashboard:locationDistribution')}
+            {t('pages:dashboard.locationDistribution')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -145,7 +145,7 @@ const Dashboard = () => {
                     <Icon className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="font-medium">{location.title}</p>
-                      <p className="text-sm text-muted-foreground">{location.percentage}% {t('dashboard:ofCollection')}</p>
+                      <p className="text-sm text-muted-foreground">{location.percentage}% {t('pages:dashboard.ofCollection')}</p>
                     </div>
                   </div>
                   <div className="text-2xl font-bold">{location.value}</div>
@@ -162,10 +162,10 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              {t('dashboard:recentAdditions')}
+              {t('pages:dashboard.recentAdditions')}
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={() => navigate('/artifacts')}>
-              {t('dashboard:viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
+              {t('pages:dashboard.viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </CardHeader>
           <CardContent>
@@ -184,7 +184,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               )) : (
-                <p className="text-sm text-muted-foreground">{t('dashboard:noRecentAdditions')}</p>
+                <p className="text-sm text-muted-foreground">{t('pages:dashboard.noRecentAdditions')}</p>
               )}
             </div>
           </CardContent>
@@ -195,10 +195,10 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              {t('dashboard:needsAttention')}
+              {t('pages:dashboard.needAttention')}
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={() => navigate('/search')}>
-              {t('dashboard:viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
+              {t('pages:dashboard.viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </CardHeader>
           <CardContent>
@@ -221,7 +221,7 @@ const Dashboard = () => {
                 ))}
               {needsAttentionCount === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  {t('dashboard:allArtifactsGoodCondition')}
+                  {t('pages:dashboard.allArtifactsGoodCondition')}
                 </p>
               )}
             </div>
@@ -233,10 +233,10 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-museum-gold" />
-              {t('dashboard:mostValuable')}
+              {t('pages:dashboard.mostValuable')}
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={() => navigate('/artifacts')}>
-              {t('dashboard:viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
+              {t('pages:dashboard.viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </CardHeader>
           <CardContent>
@@ -255,14 +255,14 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <p className="text-sm font-bold text-museum-gold">
-                    ${artifact.estimatedValue?.toLocaleString() || 'N/A'}
+                    ${artifact.estimatedValue?.toLocaleString() || t('common:common.notAvailable')}
                   </p>
                 </div>
               ))}
             </div>
             <div className="mt-4 pt-3 border-t">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{t('dashboard:totalCollectionValue')}:</span>
+                <span className="text-sm font-medium">{t('pages:dashboard.totalCollectionValue')}:</span>
                 <span className="text-lg font-bold text-museum-gold">
                   ${totalValue.toLocaleString()}
                 </span>
@@ -275,7 +275,7 @@ const Dashboard = () => {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('dashboard:quickActions')}</CardTitle>
+          <CardTitle>{t('pages:dashboard.quickActions')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
@@ -285,7 +285,7 @@ const Dashboard = () => {
               onClick={() => navigate('/artifacts')}
             >
               <Package className="h-6 w-6" />
-              <span>{t('dashboard:viewArtifacts')}</span>
+              <span>{t('pages:dashboard.viewArtifacts')}</span>
             </Button>
             <Button 
               variant="outline" 
@@ -293,7 +293,7 @@ const Dashboard = () => {
               onClick={() => navigate('/search')}
             >
               <Eye className="h-6 w-6" />
-              <span>{t('dashboard:searchCollection')}</span>
+              <span>{t('pages:dashboard.searchCollection')}</span>
             </Button>
             <Button 
               variant="outline" 
@@ -301,7 +301,7 @@ const Dashboard = () => {
               onClick={() => navigate('/users')}
             >
               <Users className="h-6 w-6" />
-              <span>{t('dashboard:manageUsers')}</span>
+              <span>{t('pages:dashboard.manageUsers')}</span>
             </Button>
             <Button 
               variant="outline" 
@@ -309,7 +309,7 @@ const Dashboard = () => {
               onClick={() => navigate('/reports')}
             >
               <TrendingUp className="h-6 w-6" />
-              <span>{t('dashboard:viewReports')}</span>
+              <span>{t('pages:dashboard.viewReports')}</span>
             </Button>
           </div>
         </CardContent>

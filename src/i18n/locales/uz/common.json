@@ -38,6 +38,7 @@
     "info": "Ma'lumot",
     "confirm": "Tasdiqlash",
     "yes": "Ha",
-    "no": "Yo'q"
+    "no": "Yo'q",
+    "notAvailable": "M/A"
   }
 }

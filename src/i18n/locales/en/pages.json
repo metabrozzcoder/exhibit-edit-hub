@@ -1,7 +1,30 @@
 {
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Overview of your collection and recent activity"
+    "subtitle": "Overview of your collection and recent activity",
+    "totalArtifacts": "Total Artifacts",
+    "inCollection": "in collection",
+    "inVitrine": "In Vitrine",
+    "currentlyExhibited": "currently exhibited",
+    "activeUsers": "Active Users",
+    "ofTotalUsers": "of {{total}} total users",
+    "needAttention": "Need Attention",
+    "conditionIssues": "condition issues",
+    "vitrineItems": "Vitrine Items",
+    "warehouseItems": "Warehouse Items",
+    "ofCollection": "of collection",
+    "locationDistribution": "Location Distribution",
+    "recentAdditions": "Recent Additions",
+    "viewAll": "View All",
+    "noRecentAdditions": "No recent additions",
+    "allArtifactsGoodCondition": "All artifacts are in good condition",
+    "mostValuable": "Most Valuable",
+    "totalCollectionValue": "Total Collection Value",
+    "quickActions": "Quick Actions",
+    "viewArtifacts": "View Artifacts",
+    "searchCollection": "Search Collection",
+    "manageUsers": "Manage Users",
+    "viewReports": "View Reports"
   },
   "artifacts": {
     "title": "Artifacts",

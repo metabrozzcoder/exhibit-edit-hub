@@ -1,7 +1,30 @@
 {
   "dashboard": {
     "title": "Панель управления",
-    "subtitle": "Обзор коллекции и последних действий"
+    "subtitle": "Обзор коллекции и последних действий",
+    "totalArtifacts": "Всего артефактов",
+    "inCollection": "в коллекции",
+    "inVitrine": "В витрине",
+    "currentlyExhibited": "в настоящее время выставлено",
+    "activeUsers": "Активные пользователи",
+    "ofTotalUsers": "из {{total}} всего пользователей",
+    "needAttention": "Требуют внимания",
+    "conditionIssues": "проблемы с состоянием",
+    "vitrineItems": "Предметы в витрине",
+    "warehouseItems": "Предметы на складе",
+    "ofCollection": "от коллекции",
+    "locationDistribution": "Распределение по местам",
+    "recentAdditions": "Недавние добавления",
+    "viewAll": "Показать все",
+    "noRecentAdditions": "Нет недавних добавлений",
+    "allArtifactsGoodCondition": "Все артефакты в хорошем состоянии",
+    "mostValuable": "Самые ценные",
+    "totalCollectionValue": "Общая стоимость коллекции",
+    "quickActions": "Быстрые действия",
+    "viewArtifacts": "Просмотр артефактов",
+    "searchCollection": "Поиск в коллекции",
+    "manageUsers": "Управление пользователями",
+    "viewReports": "Просмотр отчетов"
   },
   "artifacts": {
     "title": "Артефакты",

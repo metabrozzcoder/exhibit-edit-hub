@@ -1,7 +1,30 @@
 {
   "dashboard": {
     "title": "Boshqaruv paneli",
-    "subtitle": "Kolleksiya va so'nggi faoliyat ko'rinishi"
+    "subtitle": "Kolleksiya va so'nggi faoliyat ko'rinishi",
+    "totalArtifacts": "Jami artefaktlar",
+    "inCollection": "kolleksiyada",
+    "inVitrine": "Vitrinada",
+    "currentlyExhibited": "hozirda ko'rgazmada",
+    "activeUsers": "Faol foydalanuvchilar",
+    "ofTotalUsers": "{{total}} dan faol foydalanuvchilar",
+    "needAttention": "E'tibor talab qiladi",
+    "conditionIssues": "holat muammolari",
+    "vitrineItems": "Vitrinadagi buyumlar",
+    "warehouseItems": "Ombordagi buyumlar",
+    "ofCollection": "kolleksiyadan",
+    "locationDistribution": "Joylashuv bo'yicha taqsimot",
+    "recentAdditions": "Yaqinda qo'shilganlar",
+    "viewAll": "Barchasini ko'rish",
+    "noRecentAdditions": "Yaqinda qo'shilganlar yo'q",
+    "allArtifactsGoodCondition": "Barcha artefaktlar yaxshi holatda",
+    "mostValuable": "Eng qimmatlar",
+    "totalCollectionValue": "Kolleksiyaning umumiy qiymati",
+    "quickActions": "Tezkor harakatlar",
+    "viewArtifacts": "Artefaktlarni ko'rish",
+    "searchCollection": "Kolleksiyada qidirish",
+    "manageUsers": "Foydalanuvchilarni boshqarish",
+    "viewReports": "Hisobotlarni ko'rish"
   },
   "artifacts": {
     "title": "Artefaktlar",
