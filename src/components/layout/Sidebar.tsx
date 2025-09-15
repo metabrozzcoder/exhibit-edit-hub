@@ -28,53 +28,53 @@ const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const { user, permissions, logout } = useAuth();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'auth']);
 
   const navigation = [
     {
-      name: t('dashboard'),
+      name: t('common:dashboard'),
       href: '/',
       icon: BarChart3,
       show: true,
     },
     {
-      name: t('artifacts'),
+      name: t('common:artifacts'),
       href: '/artifacts',
       icon: Package,
       show: true,
     },
     {
-      name: t('search'),
+      name: t('common:search'),
       href: '/search',
       icon: Search,
       show: true,
     },
     {
-      name: t('history'),
+      name: t('common:history'),
       href: '/history',
       icon: History,
       show: user?.role === 'admin',
     },
     {
-      name: t('reports'),
+      name: t('common:reports'),
       href: '/reports',
       icon: FileText,
       show: permissions?.canExport,
     },
     {
-      name: t('users'),
+      name: t('common:users'),
       href: '/users',
       icon: Users,
       show: user?.role === 'admin',
     },
     {
-      name: t('auth:adminPanel'),
+      name: 'Admin Panel',
       href: '/admin',
       icon: Settings,
       show: user?.role === 'admin',
     },
     {
-      name: t('settings'),
+      name: t('common:settings'),
       href: '/settings',
       icon: Settings,
       show: true,
@@ -147,7 +147,7 @@ const Sidebar = ({ className }: SidebarProps) => {
           )}
         >
           <LogOut className={cn("h-4 w-4", collapsed ? "" : "mr-2")} />
-          {!collapsed && t('auth:logout')}
+          {!collapsed && t('common:logout')}
         </Button>
       </div>
     </div>

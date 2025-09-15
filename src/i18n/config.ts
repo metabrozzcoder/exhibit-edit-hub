@@ -36,7 +36,8 @@ const resources = {
         basicInformation: 'Basic Information',
         additionalInformation: 'Additional Information',
         actions: 'Actions',
-        export: 'Export'
+        export: 'Export',
+        history: 'History'
       },
       artifacts: {
         title: 'Artifacts',
@@ -401,7 +402,8 @@ const resources = {
         basicInformation: 'Основная информация',
         additionalInformation: 'Дополнительная информация',
         actions: 'Действия',
-        export: 'Экспорт'
+        export: 'Экспорт',
+        history: 'История'
       },
       artifacts: {
         title: 'Артефакты',
@@ -766,7 +768,8 @@ const resources = {
         basicInformation: 'Asosiy ma\'lumot',
         additionalInformation: 'Qo\'shimcha ma\'lumot',
         actions: 'Harakatlar',
-        export: 'Eksport'
+        export: 'Eksport',
+        history: 'Tarix'
       },
       artifacts: {
         title: 'Artefaktlar',
