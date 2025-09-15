@@ -20,7 +20,7 @@ import { Artifact } from '@/types/artifact';
 const SearchPage = () => {
   const { searchArtifacts, filterArtifacts, getCategories, getConditions, getLocations, getAllTags, updateArtifact, deleteArtifact } = useArtifacts();
   const { permissions } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['search', 'common']);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState('all');
@@ -125,9 +125,9 @@ const SearchPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">{t('search.title')}</h1>
+        <h1 className="text-3xl font-bold text-museum-bronze">{t('search:title')}</h1>
         <p className="text-muted-foreground">
-          {t('search.subtitle')}
+          {t('search:subtitle')}
         </p>
       </div>
 

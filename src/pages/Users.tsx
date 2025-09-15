@@ -17,7 +17,7 @@ import UserCredentialsDisplay from '@/components/auth/UserCredentialsDisplay';
 const UsersPage = () => {
   const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions, user: currentUser } = useAuth();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['users', 'common']);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
@@ -193,9 +193,9 @@ const UsersPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-museum-bronze">User Management</h1>
+          <h1 className="text-3xl font-bold text-museum-bronze">{t('users:title')}</h1>
           <p className="text-muted-foreground">
-            Manage system users and their permissions ({filteredUsers.length} users)
+            {t('users:description', { count: filteredUsers.length })}
           </p>
         </div>
         
