@@ -30,27 +30,27 @@ export const useArtifacts = () => {
 
       const formattedArtifacts: Artifact[] = data.map(item => ({
         id: item.id,
-        accessionNumber: item.accession_number,
-        title: item.title,
-        description: item.description,
-        category: item.category,
-        period: item.period,
-        culture: item.culture,
-        material: item.material,
+        accessionNumber: item.accession_number || '',
+        title: item.title || '',
+        description: item.description || '',
+        category: item.category || '',
+        period: item.period || '',
+        culture: item.culture || '',
+        material: item.material || '',
         dimensions: {
           height: item.height || 0,
           width: item.width || 0,
           depth: item.depth || 0,
           weight: item.weight || 0,
         },
-        condition: item.condition as Artifact['condition'],
-        location: item.location as Artifact['location'],
+        condition: item.condition as Artifact['condition'] || 'Good',
+        location: item.location as Artifact['location'] || 'warehouse',
         imageUrl: item.image_url || '',
         vitrineImageUrl: item.vitrine_image_url || '',
-        provenance: item.provenance,
-        acquisitionDate: item.acquisition_date,
-        acquisitionMethod: item.acquisition_method as Artifact['acquisitionMethod'],
-        estimatedValue: item.estimated_value,
+        provenance: item.provenance || '',
+        acquisitionDate: item.acquisition_date || '',
+        acquisitionMethod: item.acquisition_method as Artifact['acquisitionMethod'] || 'Purchase',
+        estimatedValue: item.estimated_value || 0,
         exhibitionHistory: item.exhibition_history || [],
         conservationNotes: item.conservation_notes || '',
         tags: item.tags || [],
@@ -192,15 +192,15 @@ export const useArtifacts = () => {
 
     const lowerSearchTerm = searchTerm.toLowerCase();
     return artifacts.filter(artifact =>
-      artifact.title.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.accessionNumber.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.description.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.culture.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.category.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.period.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.material.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.location.toLowerCase().includes(lowerSearchTerm) ||
-      artifact.tags.some(tag => tag.toLowerCase().includes(lowerSearchTerm)) ||
+      artifact.title?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.accessionNumber?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.description?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.culture?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.category?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.period?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.material?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.location?.toLowerCase().includes(lowerSearchTerm) ||
+      artifact.tags?.some(tag => tag.toLowerCase().includes(lowerSearchTerm)) ||
       artifact.provenance?.toLowerCase().includes(lowerSearchTerm) ||
       artifact.conservationNotes?.toLowerCase().includes(lowerSearchTerm)
     );
@@ -234,7 +234,7 @@ export const useArtifacts = () => {
     if (filters.tags && filters.tags.length > 0) {
       filtered = filtered.filter(artifact => 
         filters.tags!.some(tag => 
-          artifact.tags.some(artifactTag => 
+          artifact.tags?.some(artifactTag => 
             artifactTag.toLowerCase().includes(tag.toLowerCase())
           )
         )
@@ -245,19 +245,19 @@ export const useArtifacts = () => {
   };
 
   const getCategories = () => {
-    return Array.from(new Set(artifacts.map(a => a.category)));
+    return Array.from(new Set(artifacts.map(a => a.category).filter(Boolean)));
   };
 
   const getConditions = () => {
-    return Array.from(new Set(artifacts.map(a => a.condition)));
+    return Array.from(new Set(artifacts.map(a => a.condition).filter(Boolean)));
   };
 
   const getLocations = () => {
-    return Array.from(new Set(artifacts.map(a => a.location)));
+    return Array.from(new Set(artifacts.map(a => a.location).filter(Boolean)));
   };
 
   const getAllTags = () => {
-    const allTags = artifacts.flatMap(artifact => artifact.tags);
+    const allTags = artifacts.flatMap(artifact => artifact.tags || []);
     return Array.from(new Set(allTags)).sort();
   };
 
