@@ -15,6 +15,13 @@ import { Badge } from '@/components/ui/badge';
 import { Artifact } from '@/types/artifact';
 import { supabase } from '@/integrations/supabase/client';
 
+const optionalPositiveNumber = z
+  .preprocess((val) => {
+    if (val === '' || val === null || (typeof val === 'string' && val.trim() === '')) return undefined;
+    return typeof val === 'string' ? Number(val) : val;
+  }, z.number().positive('Must be greater than 0'))
+  .optional();
+
 const artifactSchema = z.object({
   accessionNumber: z.string().optional(),
   title: z.string().optional(),
@@ -24,10 +31,10 @@ const artifactSchema = z.object({
   period: z.string().optional(),
   culture: z.string().optional(),
   material: z.string().optional(),
-  height: z.coerce.number().positive().optional(),
-  width: z.coerce.number().positive().optional(),
-  depth: z.coerce.number().positive().optional(),
-  weight: z.coerce.number().positive().optional(),
+  height: optionalPositiveNumber,
+  width: optionalPositiveNumber,
+  depth: optionalPositiveNumber,
+  weight: optionalPositiveNumber,
   condition: z.enum(['Excellent', 'Good', 'Fair', 'Poor', 'Damaged']).optional(),
   location: z.enum(['warehouse', 'vitrine', 'custom']).optional(),
   locationCustomName: z.string().optional(),
@@ -35,7 +42,7 @@ const artifactSchema = z.object({
   acquisitionDate: z.string().optional(),
   acquisitionMethod: z.enum(['Purchase', 'Donation', 'Loan', 'Bequest', 'Transfer']).optional(),
   donorName: z.string().optional(),
-  estimatedValue: z.coerce.number().positive().optional(),
+  estimatedValue: optionalPositiveNumber,
   conservationNotes: z.string().optional(),
   tags: z.string().optional(),
   vitrineImageUrl: z.string().optional(),
@@ -71,10 +78,10 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       period: initialData?.period || '',
       culture: initialData?.culture || '',
       material: initialData?.material || '',
-      height: initialData?.dimensions?.height || 0,
-      width: initialData?.dimensions?.width || 0,
-      depth: initialData?.dimensions?.depth || 0,
-      weight: initialData?.dimensions?.weight || 0,
+      height: initialData?.dimensions?.height,
+      width: initialData?.dimensions?.width,
+      depth: initialData?.dimensions?.depth,
+      weight: initialData?.dimensions?.weight,
       condition: initialData?.condition || 'Good',
       location: initialData?.location || 'warehouse',
       locationCustomName: '',
@@ -82,7 +89,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       acquisitionDate: initialData?.acquisitionDate?.split('T')[0] || '',
       acquisitionMethod: initialData?.acquisitionMethod || 'Purchase',
       donorName: '',
-      estimatedValue: initialData?.estimatedValue || 0,
+      estimatedValue: initialData?.estimatedValue,
       conservationNotes: initialData?.conservationNotes || '',
       tags: initialData?.tags?.join(', ') || '',
       vitrineImageUrl: initialData?.vitrineImageUrl || '',
