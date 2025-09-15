@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Building, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -15,13 +16,14 @@ const LoginPage = () => {
   const { login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginForm.email || !loginForm.password) {
       toast({
-        title: "Error",
-        description: "Please fill in all fields",
+        title: t('login.error'),
+        description: t('login.fillFields'),
         variant: "destructive",
       });
       return;
@@ -31,8 +33,8 @@ const LoginPage = () => {
     try {
       await login(loginForm.email, loginForm.password);
       toast({
-        title: "Success",
-        description: "Welcome back!",
+        title: t('login.success'),
+        description: t('login.welcomeBack'),
       });
       // Redirect to dashboard after successful login
       navigate('/', { replace: true });
@@ -56,26 +58,26 @@ const LoginPage = () => {
             <Building className="h-8 w-8 text-museum-gold" />
             <span className="text-2xl font-bold text-museum-bronze">ARIMUS</span>
           </div>
-          <CardTitle>Sign In</CardTitle>
+          <CardTitle>{t('login.signIn')}</CardTitle>
           <CardDescription>
-            Enter your credentials to access the system
+            {t('login.enterCredentials')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="login-email">Email / Username</Label>
+              <Label htmlFor="login-email">{t('login.emailUsername')}</Label>
               <Input
                 id="login-email"
                 type="text"
-                placeholder="admin or admin@museum.org"
+                placeholder={t('login.emailPlaceholder')}
                 value={loginForm.email}
                 onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="login-password">Password</Label>
+              <Label htmlFor="login-password">{t('login.password')}</Label>
               <div className="relative">
                 <Input
                   id="login-password"
@@ -97,7 +99,7 @@ const LoginPage = () => {
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? t('login.signingIn') : t('login.signIn')}
             </Button>
           </form>
         </CardContent>

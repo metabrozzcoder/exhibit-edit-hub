@@ -14,10 +14,12 @@ import { toast } from '@/hooks/use-toast';
 import { Report, ReportType, ReportStatus, ReportPriority } from '@/types/report';
 import { Search, Eye, Trash2, FileText, Calendar, User } from 'lucide-react';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const ReportsList = () => {
   const { reports, deleteReport, searchReports } = useReports();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -68,8 +70,8 @@ const ReportsList = () => {
   const handleDeleteReport = (reportId: string) => {
     deleteReport(reportId);
     toast({
-      title: "Report Deleted",
-      description: "The report has been successfully deleted.",
+      title: t('reports.reportDeleted'),
+      description: t('reports.deleteSuccess'),
     });
   };
 
@@ -108,7 +110,7 @@ const ReportsList = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Reports Library
+            {t('reports.reportsLibrary')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -116,7 +118,7 @@ const ReportsList = () => {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search reports..."
+                placeholder={t('reports.searchReports')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -124,28 +126,28 @@ const ReportsList = () => {
             </div>
             <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Filter by type" />
+                <SelectValue placeholder={t('reports.filterByType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="Conservation">Conservation</SelectItem>
-                <SelectItem value="Condition Assessment">Condition Assessment</SelectItem>
-                <SelectItem value="Research">Research</SelectItem>
-                <SelectItem value="Acquisition">Acquisition</SelectItem>
-                <SelectItem value="Exhibition">Exhibition</SelectItem>
-                <SelectItem value="General">General</SelectItem>
+                <SelectItem value="all">{t('reports.allTypes')}</SelectItem>
+                <SelectItem value="Conservation">{t('reports.conservation')}</SelectItem>
+                <SelectItem value="Condition Assessment">{t('reports.conditionAssessment')}</SelectItem>
+                <SelectItem value="Research">{t('reports.research')}</SelectItem>
+                <SelectItem value="Acquisition">{t('reports.acquisition')}</SelectItem>
+                <SelectItem value="Exhibition">{t('reports.exhibition')}</SelectItem>
+                <SelectItem value="General">{t('reports.general')}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder={t('reports.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="Draft">Draft</SelectItem>
-                <SelectItem value="Under Review">Under Review</SelectItem>
-                <SelectItem value="Completed">Completed</SelectItem>
-                <SelectItem value="Archived">Archived</SelectItem>
+                <SelectItem value="all">{t('reports.allStatuses')}</SelectItem>
+                <SelectItem value="Draft">{t('reports.draft')}</SelectItem>
+                <SelectItem value="Under Review">{t('reports.underReview')}</SelectItem>
+                <SelectItem value="Completed">{t('reports.completed')}</SelectItem>
+                <SelectItem value="Archived">{t('reports.archived')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -158,13 +160,13 @@ const ReportsList = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Report</TableHead>
-                <TableHead>Artifact</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="w-24">Actions</TableHead>
+                <TableHead>{t('reports.report')}</TableHead>
+                <TableHead>{t('reports.artifact')}</TableHead>
+                <TableHead>{t('reports.type')}</TableHead>
+                <TableHead>{t('reports.priority')}</TableHead>
+                <TableHead>{t('reports.status')}</TableHead>
+                <TableHead>{t('reports.created')}</TableHead>
+                <TableHead className="w-24">{t('reports.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -219,15 +221,15 @@ const ReportsList = () => {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Report</AlertDialogTitle>
+                              <AlertDialogTitle>{t('reports.delete')}</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete this report? This action cannot be undone.
+                                {t('reports.deleteConfirm')}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel>{t('reports.cancel')}</AlertDialogCancel>
                               <AlertDialogAction onClick={() => handleDeleteReport(report.id)}>
-                                Delete
+                                {t('reports.delete')}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -241,7 +243,7 @@ const ReportsList = () => {
           </Table>
           {filteredReports.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
-              No reports found matching your criteria.
+              {t('reports.noReports')}
             </div>
           )}
         </CardContent>
@@ -260,33 +262,33 @@ const ReportsList = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium">Artifact:</span> {selectedReport.artifactTitle}
+                  <span className="font-medium">{t('reports.artifact')}:</span> {selectedReport.artifactTitle}
                 </div>
                 <div>
-                  <span className="font-medium">Type:</span> {selectedReport.reportType}
+                  <span className="font-medium">{t('reports.type')}:</span> {selectedReport.reportType}
                 </div>
                 <div>
-                  <span className="font-medium">Priority:</span>
+                  <span className="font-medium">{t('reports.priority')}:</span>
                   <Badge variant={getPriorityColor(selectedReport.priority)} className="ml-2">
                     {selectedReport.priority}
                   </Badge>
                 </div>
                 <div>
-                  <span className="font-medium">Status:</span>
+                  <span className="font-medium">{t('reports.status')}:</span>
                   <Badge variant={getStatusColor(selectedReport.status)} className="ml-2">
                     {selectedReport.status}
                   </Badge>
                 </div>
                 <div>
-                  <span className="font-medium">Created by:</span> {getUserName(selectedReport.createdBy)}
+                  <span className="font-medium">{t('reports.createdBy')}:</span> {getUserName(selectedReport.createdBy)}
                 </div>
                 <div>
-                  <span className="font-medium">Created:</span> {format(new Date(selectedReport.createdAt), 'PPP')}
+                  <span className="font-medium">{t('reports.created')}:</span> {format(new Date(selectedReport.createdAt), 'PPP')}
                 </div>
               </div>
               
               <div>
-                <h4 className="font-medium mb-2">Content</h4>
+                <h4 className="font-medium mb-2">{t('reports.content')}</h4>
                 <div className="bg-muted p-4 rounded-md whitespace-pre-wrap">
                   {selectedReport.content}
                 </div>
@@ -294,7 +296,7 @@ const ReportsList = () => {
 
               {selectedReport.findings && (
                 <div>
-                  <h4 className="font-medium mb-2">Key Findings</h4>
+                  <h4 className="font-medium mb-2">{t('reports.keyFindings')}</h4>
                   <div className="bg-muted p-4 rounded-md whitespace-pre-wrap">
                     {selectedReport.findings}
                   </div>
@@ -303,7 +305,7 @@ const ReportsList = () => {
 
               {selectedReport.recommendations && (
                 <div>
-                  <h4 className="font-medium mb-2">Recommendations</h4>
+                  <h4 className="font-medium mb-2">{t('reports.recommendations')}</h4>
                   <div className="bg-muted p-4 rounded-md whitespace-pre-wrap">
                     {selectedReport.recommendations}
                   </div>
@@ -311,7 +313,7 @@ const ReportsList = () => {
               )}
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogCancel>{t('reports.close')}</AlertDialogCancel>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

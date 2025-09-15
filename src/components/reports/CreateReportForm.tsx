@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { ReportType, ReportPriority, ReportStatus } from '@/types/report';
 import { Save, FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CreateReportFormProps {
   onReportCreated?: () => void;
@@ -23,6 +24,7 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
   const { artifacts } = useArtifacts();
   const { user } = useAuth();
   const { notifyReportCreated, notifyError } = useNotifications();
+  const { t } = useTranslation();
   
   const [formData, setFormData] = useState({
     artifactId: selectedArtifactId || '',
@@ -44,8 +46,8 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
     
     if (!formData.artifactId || !formData.title || !formData.content) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: t('reports.missingInfo'),
+        description: t('reports.fillRequired'),
         variant: "destructive"
       });
       return;
@@ -63,8 +65,8 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
       notifyReportCreated(formData.title, newReport?.id || 'new-report');
 
       toast({
-        title: "Report Created",
-        description: "Your report has been successfully created.",
+        title: t('reports.reportCreated'),
+        description: t('reports.successCreate'),
       });
 
       // Reset form
@@ -83,8 +85,8 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
     } catch (error) {
       notifyError('Failed to create report', 'An error occurred while creating your report. Please try again.');
       toast({
-        title: "Error",
-        description: "Failed to create report. Please try again.",
+        title: t('common.error'),
+        description: t('reports.errorCreate'),
         variant: "destructive"
       });
     } finally {
@@ -97,20 +99,20 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="h-5 w-5" />
-          Create New Report
+          {t('reports.createReport')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="artifact">Artifact *</Label>
+              <Label htmlFor="artifact">{t('reports.artifact')} {t('reports.required')}</Label>
               <Select
                 value={formData.artifactId}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, artifactId: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select an artifact" />
+                  <SelectValue placeholder={t('reports.selectArtifact')} />
                 </SelectTrigger>
                 <SelectContent>
                   {artifacts.map((artifact) => (
@@ -123,7 +125,7 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="reportType">Report Type *</Label>
+              <Label htmlFor="reportType">{t('reports.reportType')} {t('reports.required')}</Label>
               <Select
                 value={formData.reportType}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, reportType: value as ReportType }))}
@@ -132,65 +134,65 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Conservation">Conservation</SelectItem>
-                  <SelectItem value="Condition Assessment">Condition Assessment</SelectItem>
-                  <SelectItem value="Research">Research</SelectItem>
-                  <SelectItem value="Acquisition">Acquisition</SelectItem>
-                  <SelectItem value="Exhibition">Exhibition</SelectItem>
-                  <SelectItem value="General">General</SelectItem>
+                  <SelectItem value="Conservation">{t('reports.conservation')}</SelectItem>
+                  <SelectItem value="Condition Assessment">{t('reports.conditionAssessment')}</SelectItem>
+                  <SelectItem value="Research">{t('reports.research')}</SelectItem>
+                  <SelectItem value="Acquisition">{t('reports.acquisition')}</SelectItem>
+                  <SelectItem value="Exhibition">{t('reports.exhibition')}</SelectItem>
+                  <SelectItem value="General">{t('reports.general')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="title">Report Title *</Label>
+            <Label htmlFor="title">{t('reports.reportTitle')} {t('reports.required')}</Label>
             <Input
               id="title"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Enter report title"
+              placeholder={t('reports.enterTitle')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Report Content *</Label>
+            <Label htmlFor="content">{t('reports.reportContent')} {t('reports.required')}</Label>
             <Textarea
               id="content"
               value={formData.content}
               onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Enter detailed report content..."
+              placeholder={t('reports.enterContent')}
               className="min-h-[120px]"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="findings">Key Findings</Label>
+            <Label htmlFor="findings">{t('reports.findings')}</Label>
             <Textarea
               id="findings"
               value={formData.findings}
               onChange={(e) => setFormData(prev => ({ ...prev, findings: e.target.value }))}
-              placeholder="Summarize key findings..."
+              placeholder={t('reports.summarizeFindings')}
               className="min-h-[80px]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="recommendations">Recommendations</Label>
+            <Label htmlFor="recommendations">{t('reports.recommendations')}</Label>
             <Textarea
               id="recommendations"
               value={formData.recommendations}
               onChange={(e) => setFormData(prev => ({ ...prev, recommendations: e.target.value }))}
-              placeholder="Provide recommendations..."
+              placeholder={t('reports.provideRecommendations')}
               className="min-h-[80px]"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="priority">Priority</Label>
+              <Label htmlFor="priority">{t('reports.priority')}</Label>
               <Select
                 value={formData.priority}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value as ReportPriority }))}
@@ -199,16 +201,16 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Low">Low</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="High">High</SelectItem>
-                  <SelectItem value="Critical">Critical</SelectItem>
+                  <SelectItem value="Low">{t('reports.low')}</SelectItem>
+                  <SelectItem value="Medium">{t('reports.medium')}</SelectItem>
+                  <SelectItem value="High">{t('reports.high')}</SelectItem>
+                  <SelectItem value="Critical">{t('reports.critical')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{t('reports.status')}</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as ReportStatus }))}
@@ -217,10 +219,10 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Draft">Draft</SelectItem>
-                  <SelectItem value="Under Review">Under Review</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Archived">Archived</SelectItem>
+                  <SelectItem value="Draft">{t('reports.draft')}</SelectItem>
+                  <SelectItem value="Under Review">{t('reports.underReview')}</SelectItem>
+                  <SelectItem value="Completed">{t('reports.completed')}</SelectItem>
+                  <SelectItem value="Archived">{t('reports.archived')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -228,7 +230,7 @@ const CreateReportForm = ({ onReportCreated, selectedArtifactId }: CreateReportF
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
             <Save className="h-4 w-4 mr-2" />
-            {isSubmitting ? 'Creating Report...' : 'Create Report'}
+            {isSubmitting ? t('reports.creating') : t('reports.create')}
           </Button>
         </form>
       </CardContent>

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useNotifications, Notification } from '@/hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const NotificationCenter = () => {
   const { 
@@ -18,6 +19,7 @@ const NotificationCenter = () => {
     deleteNotification, 
     clearAll 
   } = useNotifications();
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   const getNotificationIcon = (type: Notification['type']) => {
@@ -70,7 +72,7 @@ const NotificationCenter = () => {
         <Card className="border-0 shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Notifications</CardTitle>
+              <CardTitle className="text-lg">{t('notifications.title')}</CardTitle>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <Button 
@@ -80,7 +82,7 @@ const NotificationCenter = () => {
                     className="text-xs"
                   >
                     <CheckCheck className="h-3 w-3 mr-1" />
-                    Mark all read
+                    {t('notifications.markAllRead')}
                   </Button>
                 )}
                 {notifications.length > 0 && (
@@ -91,7 +93,7 @@ const NotificationCenter = () => {
                     className="text-xs text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-3 w-3 mr-1" />
-                    Clear all
+                    {t('notifications.clearAll')}
                   </Button>
                 )}
               </div>
@@ -102,8 +104,8 @@ const NotificationCenter = () => {
             {notifications.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>No notifications</p>
-                <p className="text-xs">You're all caught up!</p>
+                <p>{t('notifications.noNotifications')}</p>
+                <p className="text-xs">{t('notifications.allCaughtUp')}</p>
               </div>
             ) : (
               <ScrollArea className="h-96">

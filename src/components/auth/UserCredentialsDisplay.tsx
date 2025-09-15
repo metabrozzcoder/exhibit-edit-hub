@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Copy, Check, Eye, EyeOff, User, Mail, Shield, Key } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface UserCredentialsDisplayProps {
   user: {
@@ -22,32 +23,33 @@ interface UserCredentialsDisplayProps {
 export default function UserCredentialsDisplay({ user, password, onClose }: UserCredentialsDisplayProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
 
   const handleCopyCredentials = async () => {
-    const credentials = `Name: ${user.name}
-Email: ${user.email}
-Password: ${password}
-Role: ${user.role}
-Department: ${user.department || 'Not specified'}
+    const credentials = `${t('credentials.name')}: ${user.name}
+${t('credentials.email')}: ${user.email}
+${t('login.password')}: ${password}
+${t('credentials.role')}: ${user.role}
+${t('users.department')}: ${user.department || t('profile.notSpecified')}
 
-Please change your password after first login.`;
+${t('credentials.step3')}`;
 
     try {
       await navigator.clipboard.writeText(credentials);
       setCopied(true);
-      toast.success('Credentials copied to clipboard');
+      toast.success(t('credentials.copySuccess'));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy credentials');
+      toast.error(t('credentials.copyError'));
     }
   };
 
   const handleCopyPassword = async () => {
     try {
       await navigator.clipboard.writeText(password);
-      toast.success('Password copied to clipboard');
+      toast.success(t('credentials.passwordCopied'));
     } catch (error) {
-      toast.error('Failed to copy password');
+      toast.error(t('credentials.passwordCopyError'));
     }
   };
 
@@ -56,14 +58,14 @@ Please change your password after first login.`;
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-green-700">
           <User className="h-5 w-5" />
-          User Created Successfully
+          {t('credentials.userCreated')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Alert>
           <Key className="h-4 w-4" />
           <AlertDescription>
-            Save these credentials securely. The user will need them to login from any device.
+            {t('credentials.saveSecurely')}
           </AlertDescription>
         </Alert>
 
