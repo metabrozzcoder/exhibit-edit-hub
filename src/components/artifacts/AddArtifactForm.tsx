@@ -186,14 +186,14 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">{t('common:basicInformation')}</h3>
+                  <h3 className="text-lg font-medium">{t('forms:labels.basicInformation')}</h3>
                   
                   <FormField
                     control={form.control}
                     name="accessionNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('accessionNumber')}</FormLabel>
+                        <FormLabel>{t('forms:fields.accessionNumber')}</FormLabel>
                         <FormControl>
                           <Input placeholder={t('forms:placeholders.accessionNumber')} {...field} />
                         </FormControl>
@@ -207,7 +207,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('artifactTitle')}</FormLabel>
+                        <FormLabel>{t('forms:fields.title')}</FormLabel>
                         <FormControl>
                           <Input placeholder={t('forms:placeholders.artifactTitle')} {...field} />
                         </FormControl>
@@ -221,7 +221,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('description')}</FormLabel>
+                        <FormLabel>{t('forms:fields.description')}</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder={t('forms:placeholders.description')} 
@@ -240,7 +240,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('category')}</FormLabel>
+                          <FormLabel>{t('forms:fields.category')}</FormLabel>
                           <Select onValueChange={(value) => {
                             field.onChange(value);
                             setShowCustomCategory(value === 'Custom');
@@ -284,7 +284,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       name="condition"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('condition')}</FormLabel>
+                          <FormLabel>{t('forms:fields.condition')}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -315,7 +315,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="period"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('period')}</FormLabel>
+                        <FormLabel>{t('forms:fields.period')}</FormLabel>
                         <FormControl>
                           <Input placeholder={t('forms:placeholders.period')} {...field} />
                         </FormControl>
@@ -329,7 +329,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="culture"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('culture')}</FormLabel>
+                        <FormLabel>{t('forms:fields.culture')}</FormLabel>
                         <FormControl>
                           <Input placeholder={t('forms:placeholders.culture')} {...field} />
                         </FormControl>
@@ -343,7 +343,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="material"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('material')}</FormLabel>
+                        <FormLabel>{t('forms:fields.material')}</FormLabel>
                         <FormControl>
                           <Input placeholder={t('forms:placeholders.material')} {...field} />
                         </FormControl>
@@ -452,17 +452,17 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                 </div>
               </div>
 
-              {/* Acquisition Information */}
+                {/* Acquisition Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">{t('forms:labels.acquisitionDetails')}</h3>
+                  <h3 className="text-lg font-medium">{t('forms:labels.acquisitionInformation')}</h3>
                   
                   <FormField
                     control={form.control}
                     name="provenance"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('provenance')}</FormLabel>
+                        <FormLabel>{t('forms:fields.provenance')}</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder={t('forms:placeholders.provenance')} 
@@ -481,7 +481,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       name="acquisitionDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('acquisitionDate')}</FormLabel>
+                          <FormLabel>{t('forms:fields.acquisitionDate')}</FormLabel>
                           <FormControl>
                             <Input type="date" {...field} />
                           </FormControl>
@@ -495,7 +495,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       name="acquisitionMethod"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('acquisitionMethod')}</FormLabel>
+                          <FormLabel>{t('forms:fields.acquisitionMethod')}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -522,7 +522,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                       name="donorName"
                       render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t('donorName')}</FormLabel>
+                            <FormLabel>{t('forms:labels.donorName')}</FormLabel>
                             <FormControl>
                               <Input placeholder={t('forms:placeholders.donorName')} {...field} />
                             </FormControl>
@@ -540,7 +540,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                     name="estimatedValue"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('estimatedValue')}</FormLabel>
+                        <FormLabel>{t('forms:labels.estimatedValue')}</FormLabel>
                         <FormControl>
                           <Input type="number" placeholder={t('forms:placeholders.estimatedValue')} {...field} />
                         </FormControl>
@@ -601,7 +601,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                 {/* Vitrine Image Upload - Only show if location is vitrine */}
                 {selectedLocation === 'vitrine' && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">{t('forms:labels.vitrineImage')}</h3>
+                    <h3 className="text-lg font-medium">{t('forms:labels.vitrineImageUpload')}</h3>
                     
                     <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
                       {vitrineImagePreview ? (
@@ -653,23 +653,23 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
 
               {/* Additional Information */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">{t('additionalInformation')}</h3>
+                <h3 className="text-lg font-medium">{t('forms:labels.additionalInformation')}</h3>
                 
                 <FormField
                   control={form.control}
                   name="conservationNotes"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('conservationNotes')}</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder={t('forms:placeholders.conservationNotes')} 
-                          rows={3}
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                      <FormItem>
+                        <FormLabel>{t('forms:labels.conservationNotes')}</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder={t('forms:placeholders.conservationNotes')} 
+                            rows={3}
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                   )}
                 />
                 
@@ -677,16 +677,16 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                   control={form.control}
                   name="tags"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('tags')}</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder={t('forms:placeholders.tags')} 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                      <FormItem>
+                        <FormLabel>{t('forms:labels.tags')}</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder={t('forms:placeholders.tags')} 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                   )}
                 />
               </div>
@@ -698,7 +698,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
                 </Button>
                 <Button type="submit" className="bg-museum-gold hover:bg-museum-gold/90">
                   <Save className="h-4 w-4 mr-2" />
-                  {mode === 'create' ? t('addArtifact') : t('common:edit')}
+                  {t('forms:buttons.save')}
                 </Button>
               </div>
             </form>
