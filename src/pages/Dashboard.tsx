@@ -6,12 +6,16 @@ import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '@/components/common/PageHeader';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const Dashboard = () => {
   const { artifacts } = useArtifacts();
   const { getAllUsers, user } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation(['dashboard', 'common']);
+  const { t } = useTranslation(['dashboard', 'common', 'forms']);
+  
+  usePageTitle('dashboard');
   
   const totalArtifacts = artifacts.length;
   const inVitrineCount = artifacts.filter(a => a.location === 'vitrine').length;
@@ -99,10 +103,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">{t('common:dashboard')}</h1>
-        <p className="text-muted-foreground">{t('dashboard:museumCollectionOverview')}</p>
-      </div>
+      <PageHeader pageKey="dashboard" />
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {

@@ -32,49 +32,49 @@ const Sidebar = ({ className }: SidebarProps) => {
 
   const navigation = [
     {
-      name: t('common:dashboard'),
+      name: t('common:nav.dashboard'),
       href: '/',
       icon: BarChart3,
       show: true,
     },
     {
-      name: t('common:artifacts'),
+      name: t('common:nav.artifacts'),
       href: '/artifacts',
       icon: Package,
       show: true,
     },
     {
-      name: t('common:search'),
+      name: t('common:nav.search'),
       href: '/search',
       icon: Search,
       show: true,
     },
     {
-      name: t('common:history'),
+      name: t('common:nav.history'),
       href: '/history',
       icon: History,
       show: user?.role === 'admin',
     },
     {
-      name: t('common:reports'),
+      name: t('common:nav.reports'),
       href: '/reports',
       icon: FileText,
       show: permissions?.canExport,
     },
     {
-      name: t('common:users'),
+      name: t('common:nav.users'),
       href: '/users',
       icon: Users,
       show: user?.role === 'admin',
     },
     {
-      name: 'Admin Panel',
+      name: t('common:nav.adminPanel'),
       href: '/admin',
       icon: Settings,
       show: user?.role === 'admin',
     },
     {
-      name: t('common:settings'),
+      name: t('common:nav.settings'),
       href: '/settings',
       icon: Settings,
       show: true,
@@ -147,7 +147,7 @@ const Sidebar = ({ className }: SidebarProps) => {
           )}
         >
           <LogOut className={cn("h-4 w-4", collapsed ? "" : "mr-2")} />
-          {!collapsed && t('common:logout')}
+          {!collapsed && t('common:nav.logout')}
         </Button>
       </div>
     </div>

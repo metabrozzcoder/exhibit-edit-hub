@@ -1,0 +1,39 @@
+{
+  "categories": {
+    "allCategories": "Barcha kategoriyalar",
+    "pottery": "Kulolchilik",
+    "textiles": "To'qimachilik",
+    "metalwork": "Metall buyumlari",
+    "woodwork": "Yog'och buyumlari",
+    "jewelry": "Zargarlik buyumlari",
+    "stone": "Tosh",
+    "glass": "Shisha",
+    "bone": "Suyak",
+    "leather": "Teri",
+    "other": "Boshqa"
+  },
+  "conditions": {
+    "allConditions": "Barcha holatlar",
+    "excellent": "Ajoyib",
+    "good": "Yaxshi",
+    "fair": "O'rtacha",
+    "poor": "Yomon",
+    "fragmentary": "Parchalanuvchi"
+  },
+  "fields": {
+    "name": "Nomi",
+    "description": "Tavsif",
+    "category": "Kategoriya",
+    "condition": "Holati",
+    "material": "Material",
+    "period": "Davr",
+    "location": "Joylashuv",
+    "dimensions": "O'lchamlari",
+    "weight": "Og'irligi",
+    "date": "Sana"
+  },
+  "placeholders": {
+    "searchArtifacts": "Artefaktlarni qidiring..."
+  },
+  "filters": "Filtrlar"
+}

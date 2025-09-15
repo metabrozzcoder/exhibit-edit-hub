@@ -12,7 +12,7 @@ import LanguageSwitcher from '@/components/ui/language-switcher';
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['forms', 'common']);
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
@@ -20,7 +20,7 @@ const Header = () => {
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input 
-            placeholder={t('artifacts:search')} 
+            placeholder={t('forms:placeholders.searchArtifacts')} 
             className="pl-10"
           />
         </div>
@@ -41,23 +41,23 @@ const Header = () => {
                 <User className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{t('auth:profile')}</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="z-50 bg-popover border">
+              <DropdownMenuLabel>{t('common:nav.profile')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate('/profile')}>
                 <Settings className="mr-2 h-4 w-4" />
-                <span>{t('auth:profile')}</span>
+                <span>{t('common:nav.profile')}</span>
               </DropdownMenuItem>
               {user?.role === 'admin' && (
                 <DropdownMenuItem onClick={() => navigate('/admin')}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>{t('auth:adminPanel')}</span>
+                  <span>{t('common:nav.adminPanel')}</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => { logout(); navigate('/'); }}>
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>{t('auth:logout')}</span>
+                <span>{t('common:nav.logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

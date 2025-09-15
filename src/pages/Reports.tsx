@@ -5,11 +5,15 @@ import CreateReportForm from '@/components/reports/CreateReportForm';
 import ReportsList from '@/components/reports/ReportsList';
 import { FileText, Plus, List } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '@/components/common/PageHeader';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const ReportsPage = () => {
   const { user } = useAuth();
   const { t } = useTranslation(['reports', 'common']);
   const [activeTab, setActiveTab] = useState('list');
+  
+  usePageTitle('reports');
 
   // Check if user has permission to view reports (not viewers)
   if (user?.role === 'viewer') {
@@ -32,14 +36,7 @@ const ReportsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">{t('reports:title')}</h1>
-          <p className="text-muted-foreground">
-            {t('reports:description')}
-          </p>
-        </div>
-      </div>
+      <PageHeader pageKey="reports" />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2 max-w-md">

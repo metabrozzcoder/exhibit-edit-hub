@@ -13,8 +13,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { User, UserRole } from '@/types/artifact';
 import UserCredentialsDisplay from '@/components/auth/UserCredentialsDisplay';
+import PageHeader from '@/components/common/PageHeader';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const UsersPage = () => {
+  usePageTitle('users');
   const { getAllUsers, createUser, updateUserRole, toggleUserActive, deleteUser, permissions, user: currentUser } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation(['users', 'common']);
@@ -192,10 +195,10 @@ const UsersPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
+        <PageHeader pageKey="users" />
         <div>
-          <h1 className="text-3xl font-bold text-museum-bronze">{t('users:title')}</h1>
           <p className="text-muted-foreground">
-            {t('users:description', { count: filteredUsers.length })}
+            {t('pages:users.subtitle')} ({filteredUsers.length} users)
           </p>
         </div>
         

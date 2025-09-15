@@ -13,8 +13,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Artifact } from '@/types/artifact';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '@/components/common/PageHeader';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const Artifacts = () => {
+  usePageTitle('artifacts');
   const { permissions } = useAuth();
   const { notifyArtifactAdded, notifyArtifactUpdated, notifyArtifactDeleted } = useNotifications();
   const { t } = useTranslation(['artifacts', 'common']);
@@ -134,10 +137,10 @@ const Artifacts = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
+        <PageHeader pageKey="artifacts" />
         <div>
-          <h1 className="text-3xl font-bold text-museum-bronze">{t('artifacts:title')}</h1>
           <p className="text-muted-foreground">
-            {t('artifacts:manageCollection', { shown: filteredArtifacts.length, total: artifacts.length })}
+            {t('pages:artifacts.manageCollection', { shown: filteredArtifacts.length, total: artifacts.length })}
           </p>
         </div>
         

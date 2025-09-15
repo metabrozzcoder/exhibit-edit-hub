@@ -16,8 +16,11 @@ import { useArtifacts } from '@/hooks/useArtifacts';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Artifact } from '@/types/artifact';
+import PageHeader from '@/components/common/PageHeader';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const SearchPage = () => {
+  usePageTitle('search');
   const { searchArtifacts, filterArtifacts, getCategories, getConditions, getLocations, getAllTags, updateArtifact, deleteArtifact } = useArtifacts();
   const { permissions } = useAuth();
   const { t } = useTranslation(['search', 'common']);
@@ -124,12 +127,7 @@ const SearchPage = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">{t('search:title')}</h1>
-        <p className="text-muted-foreground">
-          {t('search:subtitle')}
-        </p>
-      </div>
+      <PageHeader pageKey="search" />
 
       <div className="max-w-4xl space-y-6">
         <div className="relative">

@@ -1,0 +1,39 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your collection and recent activity"
+  },
+  "artifacts": {
+    "title": "Artifacts",
+    "subtitle": "Manage your collection",
+    "manageCollection": "Manage your collection ({{shown}} of {{total}} shown)",
+    "noArtifactsFound": "No artifacts found",
+    "adjustFilters": "Try adjusting your search or filters",
+    "getStarted": "Start by adding your first artifact",
+    "exportCompleted": "Export completed",
+    "exportDesc": "{{count}} items exported to CSV.",
+    "deleteSuccess": "Artifact Deleted",
+    "deleteSuccessDesc": "The artifact has been successfully deleted."
+  },
+  "search": {
+    "title": "Search",
+    "subtitle": "Find artifacts in your collection",
+    "placeholder": "Search artifacts..."
+  },
+  "history": {
+    "title": "History", 
+    "subtitle": "View recent changes and activity"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Generate and view collection reports"
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage user accounts and permissions"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your preferences"
+  }
+}

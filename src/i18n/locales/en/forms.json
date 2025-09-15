@@ -1,0 +1,39 @@
+{
+  "categories": {
+    "allCategories": "All Categories",
+    "pottery": "Pottery",
+    "textiles": "Textiles", 
+    "metalwork": "Metalwork",
+    "woodwork": "Woodwork",
+    "jewelry": "Jewelry",
+    "stone": "Stone",
+    "glass": "Glass",
+    "bone": "Bone",
+    "leather": "Leather",
+    "other": "Other"
+  },
+  "conditions": {
+    "allConditions": "All Conditions",
+    "excellent": "Excellent",
+    "good": "Good", 
+    "fair": "Fair",
+    "poor": "Poor",
+    "fragmentary": "Fragmentary"
+  },
+  "fields": {
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "condition": "Condition",
+    "material": "Material",
+    "period": "Period",
+    "location": "Location",
+    "dimensions": "Dimensions",
+    "weight": "Weight",
+    "date": "Date"
+  },
+  "placeholders": {
+    "searchArtifacts": "Search artifacts..."
+  },
+  "filters": "Filters"
+}

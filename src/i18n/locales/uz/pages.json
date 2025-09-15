@@ -1,0 +1,39 @@
+{
+  "dashboard": {
+    "title": "Boshqaruv paneli",
+    "subtitle": "Kolleksiya va so'nggi faoliyat ko'rinishi"
+  },
+  "artifacts": {
+    "title": "Artefaktlar",
+    "subtitle": "Kolleksiyani boshqarish",
+    "manageCollection": "Kolleksiyani boshqaring ({{shown}} / {{total}} ko'rsatilgan)",
+    "noArtifactsFound": "Artefaktlar topilmadi",
+    "adjustFilters": "Qidiruv yoki filtrlarni o'zgartirishga harakat qiling",
+    "getStarted": "Birinchi artefaktni qo'shishdan boshlang",
+    "exportCompleted": "Eksport yakunlandi",
+    "exportDesc": "{{count}} ta element CSV ga eksport qilindi.",
+    "deleteSuccess": "Artefakt o'chirildi",
+    "deleteSuccessDesc": "Artefakt muvaffaqiyatli o'chirildi."
+  },
+  "search": {
+    "title": "Qidiruv",
+    "subtitle": "Kolleksiyadagi artefaktlarni toping",
+    "placeholder": "Artefaktlarni qidiring..."
+  },
+  "history": {
+    "title": "Tarix",
+    "subtitle": "So'nggi o'zgarishlar va faoliyatni ko'rish"
+  },
+  "reports": {
+    "title": "Hisobotlar",
+    "subtitle": "Kolleksiya hisobotlarini yaratish va ko'rish"
+  },
+  "users": {
+    "title": "Foydalanuvchilar",
+    "subtitle": "Foydalanuvchi hisoblarini va ruxsatlarni boshqarish"
+  },
+  "settings": {
+    "title": "Sozlamalar",
+    "subtitle": "Afzalliklarni sozlash"
+  }
+}

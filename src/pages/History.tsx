@@ -10,8 +10,11 @@ import { useRealtime } from '@/hooks/useRealtime';
 import { supabase } from '@/integrations/supabase/client';
 import { ArtifactHistory } from '@/types/artifact';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '@/components/common/PageHeader';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const History = () => {
+  usePageTitle('history');
   const { profile } = useAuth();
   const { t } = useTranslation(['common', 'history']);
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -162,10 +165,10 @@ const History = () => {
 
   return (
     <div className="space-y-6">
+      <PageHeader pageKey="history" />
       <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">{t('history:title')}</h1>
         <p className="text-muted-foreground">
-          {t('history:description')} ({filteredHistory.length} entries)
+          {t('pages:history.subtitle')} ({filteredHistory.length} entries)
         </p>
       </div>
 

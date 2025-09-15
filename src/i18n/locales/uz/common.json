@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "dashboard": "Boshqaruv paneli",
+    "artifacts": "Artefaktlar",
+    "search": "Qidiruv",
+    "history": "Tarix",
+    "reports": "Hisobotlar",
+    "users": "Foydalanuvchilar",
+    "settings": "Sozlamalar",
+    "adminPanel": "Administrator paneli",
+    "profile": "Profil",
+    "logout": "Chiqish"
+  },
+  "actions": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "add": "Qo'shish",
+    "export": "Eksport",
+    "search": "Qidiruv",
+    "filter": "Filtr",
+    "view": "Ko'rish",
+    "create": "Yaratish",
+    "update": "Yangilash",
+    "close": "Yopish"
+  },
+  "language": {
+    "english": "Inglizcha",
+    "russian": "Ruscha",
+    "uzbek": "O'zbekcha"
+  },
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "error": "Xato",
+    "success": "Muvaffaqiyat",
+    "warning": "Ogohlantirish",
+    "info": "Ma'lumot",
+    "confirm": "Tasdiqlash",
+    "yes": "Ha",
+    "no": "Yo'q"
+  }
+}

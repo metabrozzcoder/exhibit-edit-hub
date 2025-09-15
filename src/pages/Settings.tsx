@@ -10,8 +10,11 @@ import { useSettings } from '@/hooks/useSettings';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/hooks/useLanguage';
+import PageHeader from '@/components/common/PageHeader';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const SettingsPage = () => {
+  usePageTitle('settings');
   const { user } = useAuth();
   const { settings, isLoading, saveSettings } = useSettings();
   const { t } = useTranslation();
@@ -88,12 +91,7 @@ const SettingsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-museum-bronze">Settings</h1>
-        <p className="text-muted-foreground">
-          Configure your museum collection management system
-        </p>
-      </div>
+      <PageHeader pageKey="settings" />
 
       <div className="grid gap-6">
         {/* General Settings */}

@@ -1,0 +1,39 @@
+{
+  "categories": {
+    "allCategories": "Все категории",
+    "pottery": "Керамика",
+    "textiles": "Текстиль",
+    "metalwork": "Металлические изделия",
+    "woodwork": "Деревянные изделия",
+    "jewelry": "Ювелирные изделия",
+    "stone": "Камень",
+    "glass": "Стекло",
+    "bone": "Кость",
+    "leather": "Кожа",
+    "other": "Другое"
+  },
+  "conditions": {
+    "allConditions": "Все состояния",
+    "excellent": "Отличное",
+    "good": "Хорошее",
+    "fair": "Удовлетворительное",
+    "poor": "Плохое",
+    "fragmentary": "Фрагментарное"
+  },
+  "fields": {
+    "name": "Название",
+    "description": "Описание",
+    "category": "Категория",
+    "condition": "Состояние",
+    "material": "Материал",
+    "period": "Период",
+    "location": "Местоположение",
+    "dimensions": "Размеры",
+    "weight": "Вес",
+    "date": "Дата"
+  },
+  "placeholders": {
+    "searchArtifacts": "Поиск артефактов..."
+  },
+  "filters": "Фильтры"
+}
