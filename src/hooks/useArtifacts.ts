@@ -73,34 +73,47 @@ export const useArtifacts = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Only include fields that have values
+      const insertData: any = {
+        created_by: user.id,
+        last_edited_by: user.id,
+      };
+
+      // Only add non-empty string fields
+      if (artifactData.accessionNumber?.trim()) insertData.accession_number = artifactData.accessionNumber.trim();
+      if (artifactData.title?.trim()) insertData.title = artifactData.title.trim();
+      if (artifactData.description?.trim()) insertData.description = artifactData.description.trim();
+      if (artifactData.category?.trim()) insertData.category = artifactData.category.trim();
+      if (artifactData.period?.trim()) insertData.period = artifactData.period.trim();
+      if (artifactData.culture?.trim()) insertData.culture = artifactData.culture.trim();
+      if (artifactData.material?.trim()) insertData.material = artifactData.material.trim();
+      if (artifactData.condition?.trim()) insertData.condition = artifactData.condition.trim();
+      if (artifactData.location?.trim()) insertData.location = artifactData.location.trim();
+      if (artifactData.provenance?.trim()) insertData.provenance = artifactData.provenance.trim();
+      if (artifactData.acquisitionMethod?.trim()) insertData.acquisition_method = artifactData.acquisitionMethod.trim();
+      
+      // Only add non-empty date fields
+      if (artifactData.acquisitionDate?.trim()) insertData.acquisition_date = artifactData.acquisitionDate.trim();
+      
+      // Only add numeric fields if they have values
+      if (artifactData.dimensions?.height !== undefined && artifactData.dimensions.height > 0) insertData.height = artifactData.dimensions.height;
+      if (artifactData.dimensions?.width !== undefined && artifactData.dimensions.width > 0) insertData.width = artifactData.dimensions.width;
+      if (artifactData.dimensions?.depth !== undefined && artifactData.dimensions.depth > 0) insertData.depth = artifactData.dimensions.depth;
+      if (artifactData.dimensions?.weight !== undefined && artifactData.dimensions.weight > 0) insertData.weight = artifactData.dimensions.weight;
+      if (artifactData.estimatedValue !== undefined && artifactData.estimatedValue > 0) insertData.estimated_value = artifactData.estimatedValue;
+      
+      // Always include arrays and optional strings (even if empty)
+      insertData.exhibition_history = artifactData.exhibitionHistory || [];
+      insertData.tags = artifactData.tags || [];
+      insertData.conservation_notes = artifactData.conservationNotes || '';
+      
+      // Include image URLs if provided
+      if (artifactData.imageUrl) insertData.image_url = artifactData.imageUrl;
+      if (artifactData.vitrineImageUrl) insertData.vitrine_image_url = artifactData.vitrineImageUrl;
+
       const { data, error } = await supabase
         .from('artifacts')
-        .insert({
-          accession_number: artifactData.accessionNumber!,
-          title: artifactData.title!,
-          description: artifactData.description!,
-          category: artifactData.category!,
-          period: artifactData.period!,
-          culture: artifactData.culture!,
-          material: artifactData.material!,
-          height: artifactData.dimensions?.height,
-          width: artifactData.dimensions?.width,
-          depth: artifactData.dimensions?.depth,
-          weight: artifactData.dimensions?.weight,
-          condition: artifactData.condition!,
-          location: artifactData.location!,
-          image_url: artifactData.imageUrl,
-          vitrine_image_url: artifactData.vitrineImageUrl,
-          provenance: artifactData.provenance!,
-          acquisition_date: artifactData.acquisitionDate!,
-          acquisition_method: artifactData.acquisitionMethod!,
-          estimated_value: artifactData.estimatedValue,
-          exhibition_history: artifactData.exhibitionHistory || [],
-          conservation_notes: artifactData.conservationNotes || '',
-          tags: artifactData.tags || [],
-          created_by: user.id,
-          last_edited_by: user.id,
-        })
+        .insert(insertData)
         .select()
         .single();
 

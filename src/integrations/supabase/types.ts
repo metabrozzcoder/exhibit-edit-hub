@@ -46,87 +46,87 @@ export type Database = {
       }
       artifacts: {
         Row: {
-          accession_number: string
-          acquisition_date: string
-          acquisition_method: string
-          category: string
-          condition: string
+          accession_number: string | null
+          acquisition_date: string | null
+          acquisition_method: string | null
+          category: string | null
+          condition: string | null
           conservation_notes: string | null
           created_at: string
           created_by: string | null
-          culture: string
+          culture: string | null
           depth: number | null
-          description: string
+          description: string | null
           estimated_value: number | null
           exhibition_history: string[] | null
           height: number | null
           id: string
           image_url: string | null
           last_edited_by: string | null
-          location: string
-          material: string
-          period: string
-          provenance: string
+          location: string | null
+          material: string | null
+          period: string | null
+          provenance: string | null
           tags: string[] | null
-          title: string
+          title: string | null
           updated_at: string
           vitrine_image_url: string | null
           weight: number | null
           width: number | null
         }
         Insert: {
-          accession_number: string
-          acquisition_date: string
-          acquisition_method: string
-          category: string
-          condition: string
+          accession_number?: string | null
+          acquisition_date?: string | null
+          acquisition_method?: string | null
+          category?: string | null
+          condition?: string | null
           conservation_notes?: string | null
           created_at?: string
           created_by?: string | null
-          culture: string
+          culture?: string | null
           depth?: number | null
-          description: string
+          description?: string | null
           estimated_value?: number | null
           exhibition_history?: string[] | null
           height?: number | null
           id?: string
           image_url?: string | null
           last_edited_by?: string | null
-          location: string
-          material: string
-          period: string
-          provenance: string
+          location?: string | null
+          material?: string | null
+          period?: string | null
+          provenance?: string | null
           tags?: string[] | null
-          title: string
+          title?: string | null
           updated_at?: string
           vitrine_image_url?: string | null
           weight?: number | null
           width?: number | null
         }
         Update: {
-          accession_number?: string
-          acquisition_date?: string
-          acquisition_method?: string
-          category?: string
-          condition?: string
+          accession_number?: string | null
+          acquisition_date?: string | null
+          acquisition_method?: string | null
+          category?: string | null
+          condition?: string | null
           conservation_notes?: string | null
           created_at?: string
           created_by?: string | null
-          culture?: string
+          culture?: string | null
           depth?: number | null
-          description?: string
+          description?: string | null
           estimated_value?: number | null
           exhibition_history?: string[] | null
           height?: number | null
           id?: string
           image_url?: string | null
           last_edited_by?: string | null
-          location?: string
-          material?: string
-          period?: string
-          provenance?: string
+          location?: string | null
+          material?: string | null
+          period?: string | null
+          provenance?: string | null
           tags?: string[] | null
-          title?: string
+          title?: string | null
           updated_at?: string
           vitrine_image_url?: string | null
           weight?: number | null
