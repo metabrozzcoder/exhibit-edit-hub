@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Artifact } from '@/types/artifact';
+import { supabase } from '@/integrations/supabase/client';
 
 const artifactSchema = z.object({
   accessionNumber: z.string().min(1, 'Accession number is required'),
@@ -88,17 +89,8 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
     },
   });
 
-  const handleVitrineImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setVitrineImageFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => setVitrineImagePreview(e.target?.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
 
-  const handleLocationImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLocationImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setLocationImageFile(file);
@@ -108,7 +100,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
@@ -118,8 +110,56 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
     }
   };
 
-  const onSubmit = (data: ArtifactFormData) => {
+  const handleVitrineImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setVitrineImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setVitrineImagePreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImageToStorage = async (file: File, folder: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${folder}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('artifact-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('artifact-images')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return null;
+    }
+  };
+
+  const onSubmit = async (data: ArtifactFormData) => {
     const finalCategory = data.category === 'Custom' ? data.customCategory : data.category;
+    
+    // Upload images to Supabase Storage
+    let imageUrl = '';
+    let vitrineImageUrl = '';
+    
+    if (imageFile) {
+      const uploadedImageUrl = await uploadImageToStorage(imageFile, 'artifacts');
+      if (uploadedImageUrl) imageUrl = uploadedImageUrl;
+    }
+    
+    if (vitrineImageFile) {
+      const uploadedVitrineUrl = await uploadImageToStorage(vitrineImageFile, 'vitrines');
+      if (uploadedVitrineUrl) vitrineImageUrl = uploadedVitrineUrl;
+    }
+
     const artifact: Partial<Artifact> = {
       accessionNumber: data.accessionNumber,
       title: data.title,
@@ -142,8 +182,8 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       estimatedValue: data.estimatedValue,
       conservationNotes: data.conservationNotes,
       tags: data.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-      imageUrl: imagePreview,
-      vitrineImageUrl: vitrineImagePreview || undefined,
+      imageUrl: imageUrl || imagePreview,
+      vitrineImageUrl: vitrineImageUrl || vitrineImagePreview || undefined,
       exhibitionHistory: [],
     };
 

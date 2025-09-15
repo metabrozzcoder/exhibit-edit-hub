@@ -45,7 +45,7 @@ export const useNotifications = () => {
   const addNotification = useCallback((notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: Notification = {
       ...notification,
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       timestamp: new Date().toISOString(),
       read: false,
     };
