@@ -121,7 +121,6 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
   const onSubmit = (data: ArtifactFormData) => {
     const finalCategory = data.category === 'Custom' ? data.customCategory : data.category;
     const artifact: Partial<Artifact> = {
-      ...initialData,
       accessionNumber: data.accessionNumber,
       title: data.title,
       description: data.description,
@@ -145,7 +144,7 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       tags: data.tags.split(',').map(tag => tag.trim()).filter(Boolean),
       imageUrl: imagePreview,
       vitrineImageUrl: vitrineImagePreview || undefined,
-      updatedAt: new Date().toISOString(),
+      exhibitionHistory: [],
     };
 
     // Add donor information for donations
@@ -158,14 +157,11 @@ const AddArtifactForm = ({ onClose, onSave, initialData, mode }: AddArtifactForm
       artifact.conservationNotes = `${artifact.conservationNotes}\nLocation: ${data.locationCustomName}`.trim();
     }
 
-    if (mode === 'create') {
-      artifact.id = Date.now().toString();
-      artifact.createdAt = new Date().toISOString();
-      artifact.createdBy = 'curator@museum.org';
-      artifact.lastEditedBy = 'curator@museum.org';
-      artifact.exhibitionHistory = [];
-    } else {
-      artifact.lastEditedBy = 'curator@museum.org';
+    // For edit mode, include the existing artifact data
+    if (mode === 'edit' && initialData) {
+      artifact.id = initialData.id;
+      artifact.createdAt = initialData.createdAt;
+      artifact.createdBy = initialData.createdBy;
     }
 
     onSave(artifact);
